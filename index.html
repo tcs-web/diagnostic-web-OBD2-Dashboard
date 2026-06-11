@@ -11,15 +11,15 @@ h1{color:#ec4899}
 .btn:hover{background:#db2777}
 .card{background:#1e293b;padding:20px;border-radius:16px;margin:20px auto;max-width:400px}
 #data{font-size:24px;color:#fbbf24;margin-top:16px}
-#log{color:#94a3b8;font-size:12px;margin-top:20px;text-align:left;max-height:200px;overflow-y:auto}
+#log{color:#94a3b8;font-size:12px;margin-top:20px;text-align:left;max-height:200px;overflow-y:auto;border:1px solid #334155;padding:10px}
 </style>
 </head>
 <body>
 <h1>JLR + Jaguar OBD2 Scanner</h1>
-<p>Connect ELM327 dongle first, then click Connect</p>
+<p>⚠️ Turn ignition ON + start engine for live data</p>
+<p>Chrome/Edge Desktop only. Needs USB ELM327 dongle</p>
 
-<button class="btn" onclick="connectBluetooth()">1. Connect Bluetooth ELM327</button>
-<button class="btn" onclick="connectUSB()">1. Connect USB ELM327</button>
+<button class="btn" onclick="connectUSB()">Connect USB ELM327</button>
 
 <div class="card">
   <h3>Live Data</h3>
@@ -29,70 +29,81 @@ h1{color:#ec4899}
   <button class="btn" onclick="clearCodes()">Clear Check Engine</button>
 </div>
 
-<div id="log"></div>
+<div id="log">Waiting for connection...</div>
 
 <script>
 let port;
 
 function log(msg) {
-  document.getElementById('log').innerHTML += msg + '<br>';
+  const logDiv = document.getElementById('log');
+  logDiv.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
+  logDiv.scrollTop = logDiv.scrollHeight;
 }
 
 async function connectUSB() {
   try {
+    if(!('serial' in navigator)) {
+      return log('❌ Web Serial not supported. Use Chrome/Edge on desktop');
+    }
     port = await navigator.serial.requestPort();
     await port.open({ baudRate: 38400 });
     log('✅ USB ELM327 Connected');
-    initELM();
-  } catch(e) { log('❌ Error: ' + e); }
-}
-
-async function connectBluetooth() {
-  try {
-    const device = await navigator.bluetooth.requestDevice({
-      filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }]
-    });
-    log('✅ Bluetooth Device Selected: ' + device.name);
-    log('⚠️ Use Web Serial for Bluetooth on Android Chrome');
-  } catch(e) { log('❌ Error: ' + e); }
+    await initELM();
+  } catch(e) { log('❌ Connect Error: ' + e.message); }
 }
 
 async function sendCommand(cmd) {
   if(!port) return log('Connect dongle first!');
-  const writer = port.writable.getWriter();
-  const reader = port.readable.getReader();
-  
-  await writer.write(new TextEncoder().encode(cmd + '\r'));
-  await new Promise(r => setTimeout(r, 200));
-  
-  const { value } = await reader.read();
-  const result = new TextDecoder().decode(value);
-  writer.releaseLock();
-  reader.releaseLock();
-  return result;
+  try {
+    const writer = port.writable.getWriter();
+    await writer.write(new TextEncoder().encode(cmd + '\r'));
+    writer.releaseLock();
+
+    await new Promise(r => setTimeout(r, 300));
+
+    const reader = port.readable.getReader();
+    const { value } = await reader.read();
+    reader.releaseLock();
+
+    return new TextDecoder().decode(value);
+  } catch(e) {
+    log('❌ Send Error: ' + e.message);
+    return '';
+  }
 }
 
 async function initELM() {
-  await sendCommand('ATZ'); // Reset
-  await sendCommand('ATE0'); // Echo off
-  await sendCommand('ATSP0'); // Auto protocol
+  log('Resetting ELM327...');
+  await sendCommand('ATZ');
+  await new Promise(r => setTimeout(r, 1000));
+  await sendCommand('ATE0');
+  await sendCommand('ATSP0');
   document.getElementById('data').innerText = 'Connected - Ready';
+  log('✅ ELM327 Ready');
 }
 
 async function readRPM() {
-  const res = await sendCommand('010C'); // RPM PID
-  const rpm = parseInt(res.substr(-4), 16) / 4;
-  document.getElementById('data').innerText = rpm + ' RPM';
+  const res = await sendCommand('010C');
+  log('Raw: ' + res);
+  const match = res.match(/41 0C ([0-9A-F]{2}) ([0-9A-F]{2})/);
+  if(match) {
+    const rpm = (parseInt(match[1], 16) * 256 + parseInt(match[2], 16)) / 4;
+    document.getElementById('data').innerText = Math.round(rpm) + ' RPM';
+  } else {
+    document.getElementById('data').innerText = 'No RPM data';
+  }
 }
 
 async function readCodes() {
-  const res = await sendCommand('03'); // Read DTCs
-  document.getElementById('data').innerText = 'Codes: ' + res;
+  const res = await sendCommand('03');
+  log('Codes: ' + res);
+  document.getElementById('data').innerText = res.includes('NO DATA')? 'No codes' : res;
 }
 
 async function clearCodes() {
-  await sendCommand('04'); // Clear DTCs
+  await sendCommand('04');
   document.getElementById('data').innerText = 'Codes Cleared';
+  log('✅ Cleared');
 }
 </script>
 </body>
