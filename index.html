@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLR OBD2 Scanner</title>
+<style>
+body{font-family:'Poppins',sans-serif;background:#0f172a;color:#fff;padding:20px;text-align:center}
+h1{color:#ec4899}
+.btn{background:#ec4899;color:#fff;border:none;padding:14px 28px;border-radius:12px;font-size:16px;cursor:pointer;margin:10px}
+.btn:hover{background:#db2777}
+.card{background:#1e293b;padding:20px;border-radius:16px;margin:20px auto;max-width:400px}
+#data{font-size:24px;color:#fbbf24;margin-top:16px}
+#log{color:#94a3b8;font-size:12px;margin-top:20px;text-align:left;max-height:200px;overflow-y:auto}
+</style>
+</head>
+<body>
+<h1>JLR + Jaguar OBD2 Scanner</h1>
+<p>Connect ELM327 dongle first, then click Connect</p>
 
+<button class="btn" onclick="connectBluetooth()">1. Connect Bluetooth ELM327</button>
+<button class="btn" onclick="connectUSB()">1. Connect USB ELM327</button>
+
+<div class="card">
+  <h3>Live Data</h3>
+  <div id="data">Not connected</div>
+  <button class="btn" onclick="readRPM()">Read RPM</button>
+  <button class="btn" onclick="readCodes()">Read Fault Codes</button>
+  <button class="btn" onclick="clearCodes()">Clear Check Engine</button>
+</div>
+
+<div id="log"></div>
+
+<script>
+let port;
+
+function log(msg) {
+  document.getElementById('log').innerHTML += msg + '<br>';
+}
+
+async function connectUSB() {
+  try {
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 38400 });
+    log('✅ USB ELM327 Connected');
+    initELM();
+  } catch(e) { log('❌ Error: ' + e); }
+}
+
+async function connectBluetooth() {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ namePrefix: 'OBD' }, { namePrefix: 'ELM' }]
+    });
+    log('✅ Bluetooth Device Selected: ' + device.name);
+    log('⚠️ Use Web Serial for Bluetooth on Android Chrome');
+  } catch(e) { log('❌ Error: ' + e); }
+}
+
+async function sendCommand(cmd) {
+  if(!port) return log('Connect dongle first!');
+  const writer = port.writable.getWriter();
+  const reader = port.readable.getReader();
+  
+  await writer.write(new TextEncoder().encode(cmd + '\r'));
+  await new Promise(r => setTimeout(r, 200));
+  
+  const { value } = await reader.read();
+  const result = new TextDecoder().decode(value);
+  writer.releaseLock();
+  reader.releaseLock();
+  return result;
+}
+
+async function initELM() {
+  await sendCommand('ATZ'); // Reset
+  await sendCommand('ATE0'); // Echo off
+  await sendCommand('ATSP0'); // Auto protocol
+  document.getElementById('data').innerText = 'Connected - Ready';
+}
+
+async function readRPM() {
+  const res = await sendCommand('010C'); // RPM PID
+  const rpm = parseInt(res.substr(-4), 16) / 4;
+  document.getElementById('data').innerText = rpm + ' RPM';
+}
+
+async function readCodes() {
+  const res = await sendCommand('03'); // Read DTCs
+  document.getElementById('data').innerText = 'Codes: ' + res;
+}
+
+async function clearCodes() {
+  await sendCommand('04'); // Clear DTCs
+  document.getElementById('data').innerText = 'Codes Cleared';
+}
+</script>
+</body>
+</html>
