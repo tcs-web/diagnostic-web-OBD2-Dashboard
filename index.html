@@ -3,36 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JLR OBD2 Scanner</title>
+<title>Tsholo Diagnostics Pro - JLR + CJB</title>
 <style>
-body{font-family:'Poppins',sans-serif;background:#0f172a;color:#fff;padding:20px;text-align:center}
-h1{color:#ec4899}
-.btn{background:#ec4899;color:#fff;border:none;padding:14px 28px;border-radius:12px;font-size:16px;cursor:pointer;margin:10px}
+body{font-family:'Poppins',sans-serif;background:#0f172a;color:#fff;padding:14px;text-align:center}
+h1{color:#ec4899;font-size:20px}
+.btn{background:#ec4899;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12px;cursor:pointer;margin:4px}
 .btn:hover{background:#db2777}
-.card{background:#1e293b;padding:20px;border-radius:16px;margin:20px auto;max-width:400px}
-#data{font-size:24px;color:#fbbf24;margin-top:16px}
-#log{color:#94a3b8;font-size:12px;margin-top:20px;text-align:left;max-height:200px;overflow-y:auto;border:1px solid #334155;padding:10px}
+.btn-secondary{background:#334155}
+.card{background:#1e293b;padding:14px;border-radius:12px;margin:14px auto;max-width:650px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
+.gauge{background:#334155;padding:8px;border-radius:8px}
+.gauge h4{margin:0;font-size:10px;color:#94a3b8}
+.gauge p{margin:3px 0 0;font-size:16px;color:#fbbf24;font-weight:bold}
+#log{color:#94a3b8;font-size:9px;margin-top:12px;text-align:left;max-height:140px;overflow-y:auto;border:1px solid #334155;padding:5px;border-radius:6px}
+.module{background:#334155;margin:3px 0;padding:5px;border-radius:5px;text-align:left;font-size:11px}
+.status{color:#22c55e;font-size:11px;margin-top:6px}
 </style>
 </head>
 <body>
-<h1>JLR + Jaguar OBD2 Scanner</h1>
-<p>⚠️ Turn ignition ON + start engine for live data</p>
-<p>Chrome/Edge Desktop only. Needs USB ELM327 dongle</p>
+<h1>Tsholo Diagnostics Pro V4</h1>
+<p>⚠️ Ignition ON. CJB = Central Junction Box</p>
 
-<button class="btn" onclick="connectUSB()">Connect USB ELM327</button>
+<button class="btn" onclick="connectUSB()">Connect</button>
+<button class="btn btn-secondary" onclick="getVIN()">VIN</button>
+<button class="btn btn-secondary" onclick="scanModules()">Scan Modules</button>
+<button class="btn btn-secondary" onclick="savePDF()">PDF</button>
 
 <div class="card">
   <h3>Live Data</h3>
-  <div id="data">Not connected</div>
-  <button class="btn" onclick="readRPM()">Read RPM</button>
-  <button class="btn" onclick="readCodes()">Read Fault Codes</button>
-  <button class="btn" onclick="clearCodes()">Clear Check Engine</button>
+  <div class="grid">
+    <div class="gauge"><h4>RPM</h4><p id="rpm">---</p></div>
+    <div class="gauge"><h4>Speed</h4><p id="speed">---</p></div>
+    <div class="gauge"><h4>Coolant</h4><p id="coolant">---</p></div>
+    <div class="gauge"><h4>Fuel</h4><p id="fuel">---</p></div>
+    <div class="gauge"><h4>Battery</h4><p id="voltage">---</p></div>
+    <div class="gauge"><h4>Load</h4><p id="load">---</p></div>
+    <div class="gauge"><h4>Throttle</h4><p id="throttle">---</p></div>
+    <div class="gauge"><h4>MAF</h4><p id="maf">---</p></div>
+  </div>
+  <button class="btn" onclick="readAll()">Refresh</button>
+  <div class="status" id="status">Not connected</div>
 </div>
 
-<div id="log">Waiting for connection...</div>
+<div class="card">
+  <h3>ECU + CJB/BCM</h3>
+  <button class="btn" onclick="readECU()">Read ECU</button>
+  <button class="btn" onclick="readCJB()">Read CJB Data</button>
+  <button class="btn" onclick="readCodes()">Read DTCs</button>
+  <button class="btn" onclick="clearCodes()">Clear</button>
+  <div id="codes">Connect first</div>
+</div>
+
+<div id="log">Waiting...</div>
 
 <script>
 let port;
+const codeDB = {'P0420':'Catalyst Low','P0171':'Lean Bank1','P0300':'Misfire','U0100':'No ECM Comm'};
 
 function log(msg) {
   const logDiv = document.getElementById('log');
@@ -42,68 +69,193 @@ function log(msg) {
 
 async function connectUSB() {
   try {
-    if(!('serial' in navigator)) {
-      return log('❌ Web Serial not supported. Use Chrome/Edge on desktop');
-    }
+    if(!('serial' in navigator)) return log('❌ Chrome Desktop only');
     port = await navigator.serial.requestPort();
     await port.open({ baudRate: 38400 });
-    log('✅ USB ELM327 Connected');
+    log('✅ USB Connected');
     await initELM();
-  } catch(e) { log('❌ Connect Error: ' + e.message); }
+  } catch(e) { log('❌ ' + e.message); }
 }
 
-async function sendCommand(cmd) {
-  if(!port) return log('Connect dongle first!');
+async function sendCommand(cmd, timeout=300) {
+  if(!port) return '';
   try {
     const writer = port.writable.getWriter();
     await writer.write(new TextEncoder().encode(cmd + '\r'));
     writer.releaseLock();
-
-    await new Promise(r => setTimeout(r, 300));
-
+    await new Promise(r => setTimeout(r, timeout));
     const reader = port.readable.getReader();
     const { value } = await reader.read();
     reader.releaseLock();
-
-    return new TextDecoder().decode(value);
-  } catch(e) {
-    log('❌ Send Error: ' + e.message);
-    return '';
-  }
+    return new TextDecoder().decode(value).replace(/\s/g,'');
+  } catch(e) { return ''; }
 }
 
 async function initELM() {
-  log('Resetting ELM327...');
-  await sendCommand('ATZ');
-  await new Promise(r => setTimeout(r, 1000));
+  await sendCommand('ATZ', 1500);
   await sendCommand('ATE0');
-  await sendCommand('ATSP0');
-  document.getElementById('data').innerText = 'Connected - Ready';
-  log('✅ ELM327 Ready');
+  await sendCommand('ATL0');
+  await sendCommand('ATH1'); // Headers on - needed for CJB
+  await sendCommand('ATSP6'); // CAN 500k for JLR
+  let test = await sendCommand('0100');
+  if(test.includes('4100')) {
+    log('✅ JLR CAN 500k OK');
+    document.getElementById('status').innerText = 'Connected - CAN 500k';
+  } else {
+    log('⚠️ No ECU response');
+  }
 }
 
+function parseBytes(res, pid) {
+  const idx = res.indexOf('41' + pid);
+  if(idx == -1) return null;
+  return res.substr(idx + 4).match(/[0-9A-F]{2}/g) || [];
+}
+
+// UDS Request function for CJB
+async function udsRequest(header, service, pid) {
+  await sendCommand('ATSH' + header); // Set CAN header
+  const cmd = service + pid;
+  log('UDS: ' + header + ' > ' + cmd);
+  const res = await sendCommand(cmd, 500);
+  log('Resp: ' + res);
+  return res;
+}
+
+async function readECU() {
+  log('Reading ECM ID...');
+  const res = await udsRequest('7E0', '09', '04'); // ECU name
+  if(res.includes('49')) log('✅ ECM Responded');
+}
+
+async function readCJB() {
+  log('Reading CJB/BCM at 7E1...');
+  await sendCommand('ATSH7E1'); // CJB CAN ID
+
+  // Try reading part number PID F111
+  let res = await udsRequest('7E1', '22', 'F111');
+
+  if(res.includes('62F111')) {
+    const data = res.replace('62F111','');
+    log('✅ CJB Part No: ' + data);
+    document.getElementById('codes').innerHTML = '<div class="module"><b>CJB Found</b><br>Part: ' + data + '</div>';
+  }
+  else if(res.includes('7F')) {
+    log('❌ Security Access Required - JLR blocks CJB read');
+    document.getElementById('codes').innerHTML = '<div class="module">CJB Blocked by Security<br>Need JLR Pathfinder + Login</div>';
+  }
+  else {
+    log('⚠️ No CJB response. Try 7E9 for newer models');
+    // Try alternate CJB ID
+    res = await udsRequest('7E9', '22', 'F111');
+    if(res.includes('62F111')) log('✅ CJB at 7E9: ' + res);
+  }
+}
+
+async function scanModules() {
+  log('Scanning CAN IDs...');
+  const modules = ['7E0','7E1','7E8','7E9','7B3','7D0']; // ECM, CJB, TCM, ABS, Airbag
+  const div = document.getElementById('codes');
+  div.innerHTML = '';
+
+  for(let id of modules) {
+    await sendCommand('ATSH' + id);
+    let res = await sendCommand('220100', 300); // Read ECU name
+    if(res.includes('62') || res.includes('49')) {
+      div.innerHTML += `<div class="module">✅ ${id} - Module Responding</div>`;
+      log(id + ' OK');
+    } else {
+      div.innerHTML += `<div class="module">❌ ${id} - No Response</div>`;
+    }
+  }
+}
+
+// Standard OBD2 PIDs
 async function readRPM() {
   const res = await sendCommand('010C');
-  log('Raw: ' + res);
-  const match = res.match(/41 0C ([0-9A-F]{2}) ([0-9A-F]{2})/);
-  if(match) {
-    const rpm = (parseInt(match[1], 16) * 256 + parseInt(match[2], 16)) / 4;
-    document.getElementById('data').innerText = Math.round(rpm) + ' RPM';
-  } else {
-    document.getElementById('data').innerText = 'No RPM data';
+  const d = parseBytes(res, '0C');
+  if(d && d.length >= 2) document.getElementById('rpm').innerText = Math.round((parseInt(d[0],16)*256 + parseInt(d[1],16))/4);
+}
+
+async function readSpeed() {
+  const res = await sendCommand('010D');
+  const d = parseBytes(res, '0D');
+  if(d) document.getElementById('speed').innerText = parseInt(d[0],16) + ' km/h';
+}
+
+async function readCoolant() {
+  const res = await sendCommand('0105');
+  const d = parseBytes(res, '05');
+  if(d) document.getElementById('coolant').innerText = (parseInt(d[0],16) - 40) + ' °C';
+}
+
+async function readFuel() {
+  const res = await sendCommand('012F');
+  const d = parseBytes(res, '2F');
+  if(d) document.getElementById('fuel').innerText = Math.round(parseInt(d[0],16) * 100 / 255) + ' %';
+}
+
+async function readVoltage() {
+  const res = await sendCommand('ATRV');
+  const match = res.match(/([0-9]+\.[0-9]+)/);
+  if(match) document.getElementById('voltage').innerText = match[1] + ' V';
+}
+
+async function readLoad() {
+  const res = await sendCommand('0104');
+  const d = parseBytes(res, '04');
+  if(d) document.getElementById('load').innerText = Math.round(parseInt(d[0],16) * 100 / 255) + ' %';
+}
+
+async function readThrottle() {
+  const res = await sendCommand('0111');
+  const d = parseBytes(res, '11');
+  if(d) document.getElementById('throttle').innerText = Math.round(parseInt(d[0],16) * 100 / 255) + ' %';
+}
+
+async function readMAF() {
+  const res = await sendCommand('0110');
+  const d = parseBytes(res, '10');
+  if(d && d.length >= 2) document.getElementById('maf').innerText = ((parseInt(d[0],16)*256 + parseInt(d[1],16))/100) + ' g/s';
+}
+
+async function readAll() {
+  await Promise.all([readRPM(), readSpeed(), readCoolant(), readFuel(), readVoltage(), readLoad(), readThrottle(), readMAF()]);
+}
+
+async function getVIN() {
+  await sendCommand('ATSH7E0');
+  const res = await sendCommand('0902');
+  const vinHex = res.match(/490201([0-9A-F]{34})/);
+  if(vinHex) {
+    const vin = vinHex[1].match(/[0-9A-F]{2}/g).map(h => String.fromCharCode(parseInt(h,16))).join('');
+    alert('VIN: ' + vin);
+    log('VIN: ' + vin);
   }
 }
 
 async function readCodes() {
+  await sendCommand('ATSH7E0');
   const res = await sendCommand('03');
-  log('Codes: ' + res);
-  document.getElementById('data').innerText = res.includes('NO DATA')? 'No codes' : res;
+  const codes = res.match(/[0-9A-F]{4}/g);
+  const div = document.getElementById('codes');
+  if(!codes) div.innerHTML = '✅ No DTCs';
+  else div.innerHTML = codes.map(c => `<div class="module"><b>${c}</b><br>${codeDB[c] || 'Unknown'}</div>`).join('');
 }
 
 async function clearCodes() {
+  await sendCommand('ATSH7E0');
   await sendCommand('04');
-  document.getElementById('data').innerText = 'Codes Cleared';
-  log('✅ Cleared');
+  document.getElementById('codes').innerHTML = '✅ Cleared';
+  log('✅ DTCs Cleared');
+}
+
+function savePDF() {
+  const win = window.open('', '_blank');
+  const data = ['rpm','speed','coolant','fuel','voltage','load','throttle','maf']
+  .map(id => `<p><b>${id.toUpperCase()}:</b> ${document.getElementById(id).innerText}</p>`).join('');
+  win.document.write(`<h2>TCS Diagnostics Report</h2><p>${new Date().toLocaleString()}</p>${data}<h3>Modules</h3>${document.getElementById('codes').innerHTML}<p>Twinz Cooperate Services</p>`);
+  win.print();
 }
 </script>
 </body>
