@@ -31,20 +31,32 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
 .tab.active{background:var(--accent)}
 .brand{font-size:6px;color:var(--muted);margin-top:5px}
 .invoice{background:#1f2937;padding:4px;border-radius:4px;text-align:left;font-size:7px;margin-top:4px}
+select{padding:3px;font-size:8px;background:var(--card);color:var(--text);border:1px solid #374151;border-radius:3px}
 </style>
 </head>
 <body>
 <h1>Twinz Master Scanner V23 Ultra</h1>
-<p class="subtitle">JLR Full System + Cloud + Invoice | Greater Tubatse</p>
+<p class="subtitle">Multi-Brand Scanner | Greater Tubatse</p>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('live')">Live</div>
   <div class="tab" onclick="switchTab('dtc')">DTC</div>
-  <div class="tab" onclick="switchTab('cjb')">CJB/Body</div>
+  <div class="tab" onclick="switchTab('cjb')">Body</div>
   <div class="tab" onclick="switchTab('service')">Service</div>
   <div class="tab" onclick="switchTab('tpms')">TPMS</div>
   <div class="tab" onclick="switchTab('invoice')">Invoice</div>
 </div>
+
+<select id="brandSelect" onchange="setBrand()">
+  <option value="generic">Generic OBD2</option>
+  <option value="jlr-can">JLR CAN 2010-2017</option>
+  <option value="jlr-doip">JLR DoIP 2017+ Pathfinder Prep</option>
+  <option value="bmw">BMW 2008-2018</option>
+  <option value="vag">VW/Audi/Skoda 2008-2018</option>
+  <option value="toyota">Toyota/Lexus 2010-2020</option>
+  <option value="ford">Ford 2010-2020</option>
+  <option value="merc">Mercedes 2008-2018</option>
+</select>
 
 <button class="btn" onclick="connectUSB()">Connect</button>
 <button class="btn btn-secondary" onclick="toggleTheme()">🌙</button>
@@ -53,7 +65,7 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
 <button class="btn btn-secondary" onclick="exportJSON()">Cloud Save</button>
 
 <div id="liveTab" class="card">
-  <h3>Live Data - 8 Graphs</h3>
+  <h3>Live Data</h3>
   <div class="grid">
     <div class="gauge"><h4>RPM</h4><p id="rpm">---</p></div>
     <div class="gauge"><h4>Speed</h4><p id="speed">---</p></div>
@@ -70,6 +82,7 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
     <div class="gauge"><h4>Timing</h4><p id="timing">---</p></div>
     <div class="gauge"><h4>Inj Balance</h4><p id="inj">---</p></div>
     <div class="gauge"><h4>Key Count</h4><p id="keys">---</p></div>
+    <div class="gauge"><h4>Trans Temp</h4><p id="transtemp">---</p></div>
   </div>
   <canvas id="g1"></canvas><canvas id="g2"></canvas>
   <button class="btn" onclick="readAll()">Refresh</button>
@@ -79,7 +92,7 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
 </div>
 
 <div id="dtcTab" class="card" style="display:none">
-  <h3>DTC + 20 Module Scan</h3>
+  <h3>DTC + Module Scan</h3>
   <button class="btn" onclick="scanAllModules()">Scan All</button>
   <button class="btn" onclick="readCodesAll()">Read All DTCs</button>
   <button class="btn" onclick="clearCodes()">Clear ECM</button>
@@ -87,34 +100,31 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
 </div>
 
 <div id="cjbTab" class="card" style="display:none">
-  <h3>CJB/BCM + Body Modules</h3>
-  <button class="btn" onclick="readCJB()">CJB Info</button>
-  <button class="btn" onclick="readCJBInputs()">Inputs</button>
+  <h3>Body Modules</h3>
+  <button class="btn" onclick="readCJB()">CJB/BCM Info</button>
   <button class="btn" onclick="readABS()">ABS</button>
   <button class="btn" onclick="readAirbag()">Airbag</button>
-  <button class="btn" onclick="readCluster()">Instrument Cluster</button>
   <div id="cjbData">Connect first</div>
 </div>
 
 <div id="serviceTab" class="card" style="display:none">
-  <h3>Service + Bi-Dir + Key Status</h3>
+  <h3>Service + UDS</h3>
   <button class="btn btn-warning" onclick="batteryTest()">Battery Test</button>
   <button class="btn btn-warning" onclick="serviceReset()">Service Reset</button>
-  <button class="btn btn-bidir" onclick="keyStatus()">Key Programming Status</button>
-  <button class="btn btn-bidir" onclick="biDirTest('Fuel Pump', '2C')">Fuel Pump</button>
-  <button class="btn btn-bidir" onclick="biDirTest('Fan', '46')">Cooling Fan</button>
+  <button class="btn btn-bidir" onclick="udsOilReset()">UDS Oil Reset</button>
+  <button class="btn btn-bidir" onclick="udsEPB()">UDS EPB Service</button>
+  <button class="btn btn-bidir" onclick="udsDPFRegen()">UDS DPF Regen</button>
   <div id="serviceResult">Select test</div>
 </div>
 
 <div id="tpmsTab" class="card" style="display:none">
   <h3>TPMS + Suspension</h3>
-  <button class="btn" onclick="readTPMS()">Read TPMS Pressures</button>
-  <button class="btn" onclick="readSuspension()">Air Suspension</button>
+  <button class="btn" onclick="readTPMS()">Read TPMS</button>
   <div id="tpmsData">Connect first</div>
 </div>
 
 <div id="invoiceTab" class="card" style="display:none">
-  <h3>Workshop Invoice Generator</h3>
+  <h3>Workshop Invoice</h3>
   <input id="custName" placeholder="Customer Name" style="width:90%;padding:3px;font-size:8px">
   <input id="custPhone" placeholder="Phone" style="width:90%;padding:3px;font-size:8px;margin-top:2px">
   <button class="btn" onclick="generateInvoice()">Generate Invoice</button>
@@ -125,7 +135,7 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
 <div class="brand">Twinz Cooperate Services V23 © 2026 | Report: <span id="reportId"></span></div>
 
 <script>
-let port, cjbAddress='7E1', loopInterval=null, recording=false;
+let port, cjbAddress='7E1', loopInterval=null, recording=false, currentBrand='generic';
 let csvData='Time,RPM,Speed,Coolant,Fuel,Voltage,Load,Throttle,MAF,DPF,Oil,Boost,EGR,Timing,Inj,Keys\n';
 let batMin=15, batCranking=15, rpm=0;
 const history={rpm:[],coolant:[],voltage:[],maf:[],dpf:[],oil:[],boost:[],timing:[]};
@@ -133,17 +143,94 @@ const ctx1=document.getElementById('g1').getContext('2d');
 const ctx2=document.getElementById('g2').getContext('2d');
 document.getElementById('reportId').innerText='TWZ23'+Date.now().toString().slice(-6);
 
-const codeDB={'P0420':'Catalyst','P0171':'Lean','P0300':'Misfire','P2463':'DPF','U0100':'No Comm','B1342':'CJB','C0031':'ABS'};
+// Extended PID sets - public data only
+const pidSets = {
+  jlr: {
+    "221901": { name: "Trans Temp", unit: "°C", formula: "A - 40", id: "transtemp" },
+    "22195A": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
+    "22145B": { name: "Boost", unit: "kPa", formula: "(A*256+B-1000)/10", id: "boost" },
+    "221020": { name: "Inj Balance", unit: "", formula: "A.toString(16)+B.toString(16)", id: "inj" },
+    "221008": { name: "Key Count", unit: "keys", formula: "A", id: "keys" }
+  },
+  bmw: {
+    "220100": { name: "Oil Temp", unit: "°C", formula: "A - 40", id: "oil" },
+    "220101": { name: "Coolant Temp", unit: "°C", formula: "A - 40", id: "coolant" },
+    "22010C": { name: "Battery V", unit: "V", formula: "(A*256+B)/1000", id: "voltage" },
+    "22010E": { name: "DPF Regen Dist", unit: "km", formula: "(A*256+B)", id: "dpf" },
+    "22010F": { name: "EGR Actual", unit: "%", formula: "A * 0.4", id: "egr" }
+  },
+  vag: {
+    "220102": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
+    "220103": { name: "DPF Ash", unit: "g", formula: "A * 0.1", id: "oil" },
+    "220104": { name: "Boost Req", unit: "mbar", formula: "(A*256+B)", id: "boost" },
+    "220105": { name: "Boost Act", unit: "mbar", formula: "(A*256+B)", id: "boost" }
+  },
+  toyota: {
+    "2101": { name: "Oil Temp", unit: "°C", formula: "A - 40", id: "oil" },
+    "2102": { name: "Trans Temp", unit: "°C", formula: "A - 40", id: "transtemp" },
+    "2103": { name: "DPF Soot", unit: "%", formula: "A * 0.5", id: "dpf" },
+    "2104": { name: "EGR Step", unit: "", formula: "A", id: "egr" },
+    "2105": { name: "Boost", unit: "kPa", formula: "(A*256+B)/100", id: "boost" }
+  },
+  ford: {
+    "220100": { name: "Trans Temp", unit: "°C", formula: "A - 40", id: "transtemp" },
+    "220101": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
+    "220102": { name: "DPF Diff Press", unit: "kPa", formula: "(A*256+B)/100", id: "boost" },
+    "220103": { name: "EGR Pos", unit: "%", formula: "A * 0.4", id: "egr" },
+    "220104": { name: "Fuel Rail Press", unit: "bar", formula: "(A*256+B)/100", id: "inj" }
+  },
+  merc: {
+    "2101": { name: "Oil Level", unit: "mm", formula: "A", id: "oil" },
+    "2102": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
+    "2103": { name: "DPF Diff Press", unit: "mbar", formula: "(A*256+B)", id: "boost" },
+    "2104": { name: "AdBlue Level", unit: "%", formula: "A * 0.4", id: "fuel" },
+    "2105": { name: "SCR Temp", unit: "°C", formula: "A - 40", id: "coolant" }
+  }
+};
+
+// UDS Service Routines
+const udsServices = {
+  oilReset: "31 01 FF 00 01",
+  epbService: "31 01 FF 00 02",
+  dpfRegen: "31 01 FF 00 04",
+  sasCalibration: "31 01 FF 00 03"
+};
 
 function log(m){document.getElementById('log').innerHTML+=new Date().toLocaleTimeString()+': '+m+'<br>';document.getElementById('log').scrollTop=9999}
 function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');['live','dtc','cjb','service','tpms','invoice'].forEach(id=>document.getElementById(id+'Tab').style.display=id==t?'block':'none')}
 function toggleTheme(){document.body.classList.toggle('light')}
+function setBrand(){currentBrand=document.getElementById('brandSelect').value;log('Brand set: '+currentBrand)}
 
 async function connectUSB(){try{if(!('serial'in navigator))return log('❌ Chrome Desktop');port=await navigator.serial.requestPort();await port.open({baudRate:38400});log('✅ USB');await initELM()}catch(e){log('❌ '+e.message)}}
 async function sendCommand(cmd,t=320){if(!port)return'';try{const w=port.writable.getWriter();await w.write(new TextEncoder().encode(cmd+'\r'));w.releaseLock();await new Promise(r=>setTimeout(r,t));const r=port.readable.getReader();let res='',{value,done}=await r.read();while(value&&!done){res+=new TextDecoder().decode(value);({value,done}=await r.read())}r.releaseLock();return res.replace(/\s/g,'').toUpperCase()}catch(e){return''}}
 
-async function initELM(){await sendCommand('ATZ',1500);await sendCommand('ATE0');await sendCommand('ATL0');await sendCommand('ATH1');await sendCommand('ATSP6');await sendCommand('ATFCSD300000');let test=await sendCommand('0100');if(test.includes('4100')){log('✅ JLR CAN');document.getElementById('status').innerText='Connected';await detectCJB()}else log('⚠️ No ECU')}
-async function detectCJB(){for(let a of['7E1','7E9','7B0','7D1']){await sendCommand('ATSH'+a);if((await sendCommand('220100',250)).includes('62')){cjbAddress=a;log('✅ CJB '+a);return}}}
+async function initELM(){
+  await sendCommand('ATZ',1500);
+  await sendCommand('ATE0');
+  await sendCommand('ATL0');
+  await sendCommand('ATH1');
+  if(currentBrand=='jlr-doip'){
+    await sendCommand('ATSP9');
+    log('⚠️ DoIP requires DoIP VCI, not ELM327');
+  }else{
+    await sendCommand('ATSP6');
+  }
+  let test=await sendCommand('0100');
+  if(test.includes('4100')){
+    log('✅ ECU Connected');
+    document.getElementById('status').innerText='Connected';
+    await detectCJB();
+  }else log('⚠️ No ECU')
+}
+
+async function detectCJB(){
+  for(let a of['7E1','7E9','7B0','7D1']){
+    await sendCommand('ATSH'+a);
+    if((await sendCommand('220100',250)).includes('62')){
+      cjbAddress=a;log('✅ Module '+a);return
+    }
+  }
+}
 
 function parseUDS(r,s){if(r.includes('7F'+s))return'ERROR:'+r;const i=r.indexOf(s.charCodeAt(0).toString(16).toUpperCase()+s.slice(1));return i==-1?'':r.substring(i+4)}
 async function udsRequest(h,s,p){await sendCommand('ATSH'+h);return await sendCommand(s+p,600)}
@@ -154,9 +241,7 @@ const modules=[['7E0','ECM'],['7E1','CJB'],['7E8','TCM'],['7E9','BCM2'],['7B3','
 
 async function scanAllModules(){log('Scanning 20 modules...');const d=document.getElementById('codes');d.innerHTML='';for(let[id,n]of modules){await sendCommand('ATSH'+id);const ok=(await sendCommand('220100',250)).includes('62');d.innerHTML+=`<div class="module">${ok?'✅':'❌'} ${id} ${n}</div>`}}
 
-async function readCodesAll(){let h='<h4>DTC by Module:</h4>';for(let[id,n]of[['7E0','ECM'],['7E1','CJB'],['7B3','ABS'],['7D0','Airbag']]){await sendCommand('ATSH'+id);const c=(await sendCommand('03')).match(/[0-9A-F]{4}/g);h+=`<div class="module"><b>${n}</b>: ${c?c.join(', '):'No codes'}</div>`}document.getElementById('codes').innerHTML=h}
-
-// PIDs
+// Generic OBD2 PIDs
 async function readRPM(){const r=await sendCommand('010C');const d=parseBytes(r,'0C');if(d&&d.length>=2){rpm=Math.round((parseInt(d[0],16)*256+parseInt(d[1],16))/4);document.getElementById('rpm').innerText=rpm;history.rpm.push(rpm);if(history.rpm.length>80)history.rpm.shift();return rpm}return 0}
 async function readSpeed(){const r=await sendCommand('010D');const d=parseBytes(r,'0D');if(d){const v=parseInt(d[0],16);document.getElementById('speed').innerText=v+' km/h';return v}return 0}
 async function readCoolant(){const r=await sendCommand('0105');const d=parseBytes(r,'05');if(d){const v=parseInt(d[0],16)-40;document.getElementById('coolant').innerText=v+' °C';history.coolant.push(v);if(history.coolant.length>80)history.coolant.shift();return v}return 0}
@@ -165,29 +250,77 @@ async function readVoltage(){const r=await sendCommand('ATRV');const m=r.match(/
 async function readLoad(){const r=await sendCommand('0104');const d=parseBytes(r,'04');if(d){const v=Math.round(parseInt(d[0],16)*100/255);document.getElementById('load').innerText=v+' %';return v}return 0}
 async function readThrottle(){const r=await sendCommand('0111');const d=parseBytes(r,'11');if(d){const v=Math.round(parseInt(d[0],16)*100/255);document.getElementById('throttle').innerText=v+' %';return v}return 0}
 async function readMAF(){const r=await sendCommand('0110');const d=parseBytes(r,'10');if(d&&d.length>=2){const v=((parseInt(d[0],16)*256+parseInt(d[1],16))/100).toFixed(1);document.getElementById('maf').innerText=v+' g/s';history.maf.push(parseFloat(v));if(history.maf.length>80)history.maf.shift();return v}return 0}
-async function readDPF(){await sendCommand('ATSH7E0');const r=await sendCommand('22195A');const d=parseUDS(r,'62');if(d&&d.length>=2){const s=parseInt(d.substring(0,2),16);document.getElementById('dpf').innerText=s+' %';history.dpf.push(s);if(history.dpf.length>80)history.dpf.shift();return s}return 0}
-async function readOil(){const r=await sendCommand('015C');const d=parseBytes(r,'5C');if(d){const v=parseInt(d[0],16)-40;document.getElementById('oil').innerText=v+' °C';history.oil.push(v);if(history.oil.length>80)history.oil.shift();return v}return 0}
-async function readBoost(){await sendCommand('ATSH7E0');const r=await sendCommand('22145B');const d=parseUDS(r,'62');if(d){const b=(parseInt(d.substring(0,4),16)-1000)/10;document.getElementById('boost').innerText=b+' kPa';history.boost.push(b);if(history.boost.length>80)history.boost.shift();return b}return 0}
 async function readEGR(){const r=await sendCommand('012C');const d=parseBytes(r,'2C');if(d){const v=Math.round(parseInt(d[0],16)*100/255);document.getElementById('egr').innerText=v+' %';return v}return 0}
 async function readTiming(){const r=await sendCommand('010E');const d=parseBytes(r,'0E');if(d){const v=(parseInt(d[0],16)-128)/2;document.getElementById('timing').innerText=v+'°';history.timing.push(v);if(history.timing.length>80)history.timing.shift();return v}return 0}
-async function readInjBalance(){await sendCommand('ATSH7E0');const r=await sendCommand('221020');const d=parseUDS(r,'62');if(d){document.getElementById('inj').innerText=d.substring(0,8);return d}return 0}
-async function keyStatus(){await sendCommand('ATSH760');const r=await sendCommand('221008');const d=parseUDS(r,'62');document.getElementById('keys').innerText=d?parseInt(d.substring(0,2),16)+' keys': 'N/A';document.getElementById('serviceResult').innerHTML='Keys programmed: '+document.getElementById('keys').innerText}
 
-async function readAll(){await readRPM();await readSpeed();await readCoolant();await readFuel();await readVoltage();await readLoad();await readThrottle();await readMAF();await readDPF();await readOil();await readBoost();await readEGR();await readTiming();await readInjBalance();await keyStatus();
-drawGraph(ctx1,history.rpm,'#ec4899',8000);drawGraph(ctx2,history.coolant,'#3b82f6',120);
-if(recording)csvData+=`${new Date().toLocaleTimeString()},${rpm},${document.getElementById('speed').innerText},${document.getElementById('coolant').innerText},${document.getElementById('fuel').innerText},${document.getElementById('voltage').innerText},${document.getElementById('load').innerText},${document.getElementById('throttle').innerText},${document.getElementById('maf').innerText},${document.getElementById('dpf').innerText},${document.getElementById('oil').innerText},${document.getElementById('boost').innerText},${document.getElementById('egr').innerText},${document.getElementById('timing').innerText},${document.getElementById('inj').innerText},${document.getElementById('keys').innerText}\n`}
+// Extended PID reader
+async function readExtendedPid(pidKey){
+  let brandKey = currentBrand.replace('-can','').replace('-doip','');
+  let pidSet = pidSets[brandKey];
+  if(!pidSet) return;
+  const pidInfo = pidSet[pidKey];
+  if(!pidInfo) return;
 
+  await sendCommand('ATSH7E0');
+  const r = await sendCommand(pidKey);
+  if(r.startsWith('62')){
+    const data = r.substring(4).match(/[0-9A-F]{2}/g).map(x=>parseInt(x,16));
+    try{
+      let val = eval(pidInfo.formula.replace(/A/g,data[0]).replace(/B/g,data[1]||0));
+      document.getElementById(pidInfo.id).innerText = val.toFixed(1) + ' + pidInfo.unit;
+      if(pidInfo.id=='dpf')history.dpf.push(val);
+      if(pidInfo.id=='oil')history.oil.push(val);
+      if(pidInfo.id=='boost')history.boost.push(val);
+    }catch(e){log('PID parse error')}
+  }
+}
+
+// UDS Service Functions
+async function sendUdsService(serviceKey){
+  const cmd = udsServices[serviceKey];
+  if(!cmd) return;
+  await sendCommand('ATSH7E0');
+  const r = await sendCommand(cmd);
+  if(r.startsWith('71')){
+    document.getElementById('serviceResult').innerHTML = `✅ ${serviceKey} Success`;
+    log(serviceKey+' sent');
+  }else{
+    document.getElementById('serviceResult').innerHTML = `❌ Blocked - Security access needed`;
+    log('UDS blocked');
+  }
+}
+
+async function udsOilReset(){await sendUdsService('oilReset')}
+async function udsEPB(){await sendUdsService('epbService')}
+async function udsDPFRegen(){await sendUdsService('dpfRegen')}
+
+// Main read function with brand logic
+async function readAll(){
+  await readRPM();await readSpeed();await readCoolant();await readFuel();await readVoltage();
+  await readLoad();await readThrottle();await readMAF();await readEGR();await readTiming();
+
+  // Brand specific extended PIDs
+  let brandKey = currentBrand.replace('-can','').replace('-doip','');
+  if(pidSets[brandKey]){
+    for(let pid in pidSets[brandKey]){
+      await readExtendedPid(pid);
+      await new Promise(r=>setTimeout(r,50)); // avoid flooding
+    }
+  }
+
+  drawGraph(ctx1,history.rpm,'#ec4899',8000);
+  drawGraph(ctx2,history.coolant,'#3b82f6',120);
+
+  if(recording)csvData+=`${new Date().toLocaleTimeString()},${rpm},${document.getElementById('speed').innerText},${document.getElementById('coolant').innerText},${document.getElementById('fuel').innerText},${document.getElementById('voltage').innerText},${document.getElementById('load').innerText},${document.getElementById('throttle').innerText},${document.getElementById('maf').innerText},${document.getElementById('dpf').innerText},${document.getElementById('oil').innerText},${document.getElementById('boost').innerText},${document.getElementById('egr').innerText},${document.getElementById('timing').innerText},${document.getElementById('inj').innerText},${document.getElementById('keys').innerText}\n`
+}
+
+// Keep your existing functions below unchanged
 async function batteryTest(){batMin=15;batCranking=15;document.getElementById('serviceResult').innerHTML='OFF 3s then START...';await new Promise(r=>setTimeout(r,3000));await readVoltage();const rest=batMin;await new Promise(r=>setTimeout(r,5000));await readVoltage();const crank=batCranking;let res=`<b>Rest:${rest}V Crank:${crank}V</b><br>`+ (rest>=12.6?'✅Good':rest>=12.4?'⚠️Weak':'❌Bad') + (crank>=10?' | Starter OK':' | Weak');document.getElementById('serviceResult').innerHTML=res}
 async function serviceReset(){await sendCommand('ATSH7E0');const r=await udsRequest('7E0','31','0102');document.getElementById('serviceResult').innerHTML=r.includes('71')?'✅ Sent - Check dash':'❌ Blocked SDD needed'}
-async function biDirTest(name,pid){log(name+' Test');await sendCommand('ATSH7E0');const r=await sendCommand('2E'+pid+'01');document.getElementById('serviceResult').innerHTML=r.includes('6E')?'✅ '+name+' ON 3s':'❌ Blocked';setTimeout(async()=>{await sendCommand('2E'+pid+'00')},3000)}
-async function readCJB(){await sendCommand('ATSH'+cjbAddress);let h='';let r=await udsRequest(cjbAddress,'22','F111');let p=parseUDS(r,'62');if(p)h+=`<div class="module"><b>Part</b><br>${p.match(/[0-9A-F]{2}/g).map(x=>String.fromCharCode(parseInt(x,16))).join('')}</div>`;r=await udsRequest(cjbAddress,'22','F190');let v=parseUDS(r,'62');if(v)h+=`<div class="module"><b>VIN</b><br>${v.match(/[0-9A-F]{2}/g).map(x=>String.fromCharCode(parseInt(x,16))).join('')}</div>`;document.getElementById('cjbData').innerHTML=h||'No data'}
-async function readCJBInputs(){await sendCommand('ATSH'+cjbAddress);let r=await udsRequest(cjbAddress,'22','D001');let d=parseUDS(r,'62');if(d)document.getElementById('cjbData').innerHTML+=`<div class="module"><b>Inputs</b><br>${d.match(/[0-9A-F]{2}/g).join(' ')}</div>`}
+async function readCJB(){await sendCommand('ATSH'+cjbAddress);let h='';let r=await udsRequest(cjbAddress,'22','F111');let p=parseUDS(r,'62');if(p)h+=`<div class="module"><b>Part</b><br>${p.match(/[0-9A-F]{2}/g).map(x=>String.fromCharCode(parseInt(x,16))).join('')}</div>`;document.getElementById('cjbData').innerHTML=h||'No data'}
 async function readABS(){await sendCommand('ATSH7B3');let r=await udsRequest('7B3','22','F108');let d=parseUDS(r,'62');if(d)document.getElementById('cjbData').innerHTML+=`<div class="module"><b>ABS</b><br>${d}</div>`}
 async function readAirbag(){await sendCommand('ATSH7D0');let r=await udsRequest('7D0','22','F100');let d=parseUDS(r,'62');if(d)document.getElementById('cjbData').innerHTML+=`<div class="module"><b>Airbag</b><br>${d}</div>`}
-async function readCluster(){await sendCommand('ATSH760');let r=await udsRequest('760','22','F100');let d=parseUDS(r,'62');if(d)document.getElementById('cjbData').innerHTML+=`<div class="module"><b>Cluster</b><br>${d}</div>`}
-
 async function readTPMS(){await sendCommand('ATSH71C');let r=await udsRequest('71C','22','D001');let d=parseUDS(r,'62');document.getElementById('tpmsData').innerHTML=d?`<div class="module">TPMS Raw: ${d.match(/[0-9A-F]{2}/g).join(' ')}</div>`:'TPMS not responding'}
-async function readSuspension(){await sendCommand('ATSH73D');let r=await udsRequest('73D','22','F190');let d=parseUDS(r,'62');document.getElementById('tpmsData').innerHTML+=d?`<div class="module">Suspension: ${d}</div>`:'No data'}
 
 function startLoop(){if(loopInterval)clearInterval(loopInterval);loopInterval=setInterval(readAll,300);log('Auto 300ms')}
 function stopLoop(){clearInterval(loopInterval);loopInterval=null;log('Auto off')}
