@@ -16,6 +16,7 @@ h1{color:var(--accent);font-size:16px;margin:3px 0}
 .btn-record{background:#10b981}
 .btn-warning{background:#f59e0b}
 .btn-bidir{background:#8b5cf6}
+.btn-danger{background:#ef4444}
 .card{background:var(--card);padding:6px;border-radius:6px;margin:6px auto;max-width:780px}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:4px}
 @media(max-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
@@ -31,12 +32,14 @@ canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height
 .tab.active{background:var(--accent)}
 .brand{font-size:6px;color:var(--muted);margin-top:5px}
 .invoice{background:#1f2937;padding:4px;border-radius:4px;text-align:left;font-size:7px;margin-top:4px}
-select{padding:3px;font-size:8px;background:var(--card);color:var(--text);border:1px solid #374151;border-radius:3px}
+select,input{padding:3px;font-size:8px;background:var(--card);color:var(--text);border:1px solid #374151;border-radius:3px;margin:1px}
+.pid-list{max-height:120px;overflow-y:auto;text-align:left;font-size:7px}
+.pid-item{display:flex;justify-content:space-between;padding:2px;border-bottom:1px solid #374151}
 </style>
 </head>
 <body>
 <h1>Twinz Master Scanner V23 Ultra</h1>
-<p class="subtitle">Multi-Brand Scanner | Greater Tubatse</p>
+<p class="subtitle">Multi-Brand + PID Editor | Greater Tubatse</p>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('live')">Live</div>
@@ -44,6 +47,7 @@ select{padding:3px;font-size:8px;background:var(--card);color:var(--text);border
   <div class="tab" onclick="switchTab('cjb')">Body</div>
   <div class="tab" onclick="switchTab('service')">Service</div>
   <div class="tab" onclick="switchTab('tpms')">TPMS</div>
+  <div class="tab" onclick="switchTab('pid')">PID Editor</div>
   <div class="tab" onclick="switchTab('invoice')">Invoice</div>
 </div>
 
@@ -56,6 +60,7 @@ select{padding:3px;font-size:8px;background:var(--card);color:var(--text);border
   <option value="toyota">Toyota/Lexus 2010-2020</option>
   <option value="ford">Ford 2010-2020</option>
   <option value="merc">Mercedes 2008-2018</option>
+  <option value="custom">Custom PIDs</option>
 </select>
 
 <button class="btn" onclick="connectUSB()">Connect</button>
@@ -66,7 +71,7 @@ select{padding:3px;font-size:8px;background:var(--card);color:var(--text);border
 
 <div id="liveTab" class="card">
   <h3>Live Data</h3>
-  <div class="grid">
+  <div class="grid" id="gaugeGrid">
     <div class="gauge"><h4>RPM</h4><p id="rpm">---</p></div>
     <div class="gauge"><h4>Speed</h4><p id="speed">---</p></div>
     <div class="gauge"><h4>Coolant</h4><p id="coolant">---</p></div>
@@ -123,6 +128,18 @@ select{padding:3px;font-size:8px;background:var(--card);color:var(--text);border
   <div id="tpmsData">Connect first</div>
 </div>
 
+<div id="pidTab" class="card" style="display:none">
+  <h3>PID Editor</h3>
+  <p style="font-size:7px;color:var(--muted)">Add custom PIDs for any brand. Format: PID, Name, Unit, Formula</p>
+  <input id="pidInput" placeholder="221901">
+  <input id="nameInput" placeholder="Trans Temp">
+  <input id="unitInput" placeholder="°C">
+  <input id="formulaInput" placeholder="A - 40">
+  <button class="btn" onclick="addCustomPid()">Add PID</button>
+  <button class="btn btn-danger" onclick="clearCustomPids()">Clear All</button>
+  <div class="pid-list" id="pidList"></div>
+</div>
+
 <div id="invoiceTab" class="card" style="display:none">
   <h3>Workshop Invoice</h3>
   <input id="custName" placeholder="Customer Name" style="width:90%;padding:3px;font-size:8px">
@@ -143,7 +160,7 @@ const ctx1=document.getElementById('g1').getContext('2d');
 const ctx2=document.getElementById('g2').getContext('2d');
 document.getElementById('reportId').innerText='TWZ23'+Date.now().toString().slice(-6);
 
-// Extended PID sets - public data only
+// Built-in PID sets
 const pidSets = {
   jlr: {
     "221901": { name: "Trans Temp", unit: "°C", formula: "A - 40", id: "transtemp" },
@@ -154,41 +171,38 @@ const pidSets = {
   },
   bmw: {
     "220100": { name: "Oil Temp", unit: "°C", formula: "A - 40", id: "oil" },
-    "220101": { name: "Coolant Temp", unit: "°C", formula: "A - 40", id: "coolant" },
-    "22010C": { name: "Battery V", unit: "V", formula: "(A*256+B)/1000", id: "voltage" },
-    "22010E": { name: "DPF Regen Dist", unit: "km", formula: "(A*256+B)", id: "dpf" },
-    "22010F": { name: "EGR Actual", unit: "%", formula: "A * 0.4", id: "egr" }
+    "22010E": { name: "DPF Regen Dist", unit: "km", formula: "(A*256+B)", id: "dpf" }
   },
   vag: {
     "220102": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
-    "220103": { name: "DPF Ash", unit: "g", formula: "A * 0.1", id: "oil" },
-    "220104": { name: "Boost Req", unit: "mbar", formula: "(A*256+B)", id: "boost" },
-    "220105": { name: "Boost Act", unit: "mbar", formula: "(A*256+B)", id: "boost" }
+    "220103": { name: "DPF Ash", unit: "g", formula: "A * 0.1", id: "oil" }
   },
   toyota: {
     "2101": { name: "Oil Temp", unit: "°C", formula: "A - 40", id: "oil" },
     "2102": { name: "Trans Temp", unit: "°C", formula: "A - 40", id: "transtemp" },
-    "2103": { name: "DPF Soot", unit: "%", formula: "A * 0.5", id: "dpf" },
-    "2104": { name: "EGR Step", unit: "", formula: "A", id: "egr" },
-    "2105": { name: "Boost", unit: "kPa", formula: "(A*256+B)/100", id: "boost" }
+    "2103": { name: "DPF Soot", unit: "%", formula: "A * 0.5", id: "dpf" }
   },
   ford: {
     "220100": { name: "Trans Temp", unit: "°C", formula: "A - 40", id: "transtemp" },
-    "220101": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
-    "220102": { name: "DPF Diff Press", unit: "kPa", formula: "(A*256+B)/100", id: "boost" },
-    "220103": { name: "EGR Pos", unit: "%", formula: "A * 0.4", id: "egr" },
-    "220104": { name: "Fuel Rail Press", unit: "bar", formula: "(A*256+B)/100", id: "inj" }
+    "220101": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" }
   },
   merc: {
-    "2101": { name: "Oil Level", unit: "mm", formula: "A", id: "oil" },
     "2102": { name: "DPF Soot", unit: "%", formula: "A * 0.4", id: "dpf" },
-    "2103": { name: "DPF Diff Press", unit: "mbar", formula: "(A*256+B)", id: "boost" },
-    "2104": { name: "AdBlue Level", unit: "%", formula: "A * 0.4", id: "fuel" },
-    "2105": { name: "SCR Temp", unit: "°C", formula: "A - 40", id: "coolant" }
-  }
+    "2104": { name: "AdBlue Level", unit: "%", formula: "A * 0.4", id: "fuel" }
+  },
+  custom: {}
 };
 
-// UDS Service Routines
+// Load custom PIDs from localStorage
+function loadCustomPids(){
+  const saved = localStorage.getItem('twinz_custom_pids');
+  if(saved){
+    pidSets.custom = JSON.parse(saved);
+    renderPidList();
+  }
+}
+loadCustomPids();
+
 const udsServices = {
   oilReset: "31 01 FF 00 01",
   epbService: "31 01 FF 00 02",
@@ -197,7 +211,7 @@ const udsServices = {
 };
 
 function log(m){document.getElementById('log').innerHTML+=new Date().toLocaleTimeString()+': '+m+'<br>';document.getElementById('log').scrollTop=9999}
-function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');['live','dtc','cjb','service','tpms','invoice'].forEach(id=>document.getElementById(id+'Tab').style.display=id==t?'block':'none')}
+function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');['live','dtc','cjb','service','tpms','pid','invoice'].forEach(id=>document.getElementById(id+'Tab').style.display=id==t?'block':'none')}
 function toggleTheme(){document.body.classList.toggle('light')}
 function setBrand(){currentBrand=document.getElementById('brandSelect').value;log('Brand set: '+currentBrand)}
 
@@ -237,9 +251,51 @@ async function udsRequest(h,s,p){await sendCommand('ATSH'+h);return await sendCo
 function parseBytes(r,p){const i=r.indexOf('41'+p);return i==-1?null:r.substr(i+4).match(/[0-9A-F]{2}/g)||[]}
 function drawGraph(ctx,data,color,max){ctx.clearRect(0,0,600,80);ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.beginPath();data.forEach((v,i)=>{const x=i*7.5,y=80-(v/max)*80;if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke()}
 
-const modules=[['7E0','ECM'],['7E1','CJB'],['7E8','TCM'],['7E9','BCM2'],['7B3','ABS'],['7D0','Airbag'],['760','Cluster'],['720','Climate'],['727','PDC'],['73C','Steering'],['73D','Suspension'],['747','Radio'],['7C0','Gateway'],['7A0','Door FL'],['7A1','Door FR'],['73B','4x4'],['71C','TPMS'],['7A4','Seat FL'],['7A5','Seat FR'],['742','Audio']];
+// PID Editor Functions
+function addCustomPid(){
+  const pid = document.getElementById('pidInput').value.trim().toUpperCase();
+  const name = document.getElementById('nameInput').value.trim();
+  const unit = document.getElementById('unitInput').value.trim();
+  const formula = document.getElementById('formulaInput').value.trim();
 
-async function scanAllModules(){log('Scanning 20 modules...');const d=document.getElementById('codes');d.innerHTML='';for(let[id,n]of modules){await sendCommand('ATSH'+id);const ok=(await sendCommand('220100',250)).includes('62');d.innerHTML+=`<div class="module">${ok?'✅':'❌'} ${id} ${n}</div>`}}
+  if(!pid ||!name ||!formula){
+    log('❌ Fill all fields');
+    return;
+  }
+
+  // Auto-generate ID from name
+  const id = name.toLowerCase().replace(/\s+/g,'');
+
+  pidSets.custom[pid] = {name, unit, formula, id};
+  localStorage.setItem('twinz_custom_pids', JSON.stringify(pidSets.custom));
+  renderPidList();
+  log(`✅ Added PID ${pid} - ${name}`);
+
+  // Clear inputs
+  document.getElementById('pidInput').value='';
+  document.getElementById('nameInput').value='';
+  document.getElementById('unitInput').value='';
+  document.getElementById('formulaInput').value='';
+}
+
+function clearCustomPids(){
+  if(confirm('Delete all custom PIDs?')){
+    pidSets.custom = {};
+    localStorage.removeItem('twinz_custom_pids');
+    renderPidList();
+    log('🗑️ Custom PIDs cleared');
+  }
+}
+
+function renderPidList(){
+  const list = document.getElementById('pidList');
+  list.innerHTML='';
+  for(let pid in pidSets.custom){
+    const p = pidSets.custom[pid];
+    list.innerHTML += `<div class="pid-item"><span>${pid} - ${p.name} [${p.unit}]</span><span>${p.formula}</span></div>`;
+  }
+}
+renderPidList();
 
 // Generic OBD2 PIDs
 async function readRPM(){const r=await sendCommand('010C');const d=parseBytes(r,'0C');if(d&&d.length>=2){rpm=Math.round((parseInt(d[0],16)*256+parseInt(d[1],16))/4);document.getElementById('rpm').innerText=rpm;history.rpm.push(rpm);if(history.rpm.length>80)history.rpm.shift();return rpm}return 0}
@@ -267,11 +323,9 @@ async function readExtendedPid(pidKey){
     const data = r.substring(4).match(/[0-9A-F]{2}/g).map(x=>parseInt(x,16));
     try{
       let val = eval(pidInfo.formula.replace(/A/g,data[0]).replace(/B/g,data[1]||0));
-      document.getElementById(pidInfo.id).innerText = val.toFixed(1) + ' + pidInfo.unit;
-      if(pidInfo.id=='dpf')history.dpf.push(val);
-      if(pidInfo.id=='oil')history.oil.push(val);
-      if(pidInfo.id=='boost')history.boost.push(val);
-    }catch(e){log('PID parse error')}
+      let el = document.getElementById(pidInfo.id);
+      if(el) el.innerText = val.toFixed(1) + ' + pidInfo.unit;
+    }catch(e){log('PID parse error: '+e.message)}
   }
 }
 
@@ -294,17 +348,17 @@ async function udsOilReset(){await sendUdsService('oilReset')}
 async function udsEPB(){await sendUdsService('epbService')}
 async function udsDPFRegen(){await sendUdsService('dpfRegen')}
 
-// Main read function with brand logic
+// Main read function
 async function readAll(){
   await readRPM();await readSpeed();await readCoolant();await readFuel();await readVoltage();
   await readLoad();await readThrottle();await readMAF();await readEGR();await readTiming();
 
-  // Brand specific extended PIDs
+  // Read extended PIDs for selected brand
   let brandKey = currentBrand.replace('-can','').replace('-doip','');
   if(pidSets[brandKey]){
     for(let pid in pidSets[brandKey]){
       await readExtendedPid(pid);
-      await new Promise(r=>setTimeout(r,50)); // avoid flooding
+      await new Promise(r=>setTimeout(r,50));
     }
   }
 
@@ -314,7 +368,7 @@ async function readAll(){
   if(recording)csvData+=`${new Date().toLocaleTimeString()},${rpm},${document.getElementById('speed').innerText},${document.getElementById('coolant').innerText},${document.getElementById('fuel').innerText},${document.getElementById('voltage').innerText},${document.getElementById('load').innerText},${document.getElementById('throttle').innerText},${document.getElementById('maf').innerText},${document.getElementById('dpf').innerText},${document.getElementById('oil').innerText},${document.getElementById('boost').innerText},${document.getElementById('egr').innerText},${document.getElementById('timing').innerText},${document.getElementById('inj').innerText},${document.getElementById('keys').innerText}\n`
 }
 
-// Keep your existing functions below unchanged
+// Existing functions - unchanged
 async function batteryTest(){batMin=15;batCranking=15;document.getElementById('serviceResult').innerHTML='OFF 3s then START...';await new Promise(r=>setTimeout(r,3000));await readVoltage();const rest=batMin;await new Promise(r=>setTimeout(r,5000));await readVoltage();const crank=batCranking;let res=`<b>Rest:${rest}V Crank:${crank}V</b><br>`+ (rest>=12.6?'✅Good':rest>=12.4?'⚠️Weak':'❌Bad') + (crank>=10?' | Starter OK':' | Weak');document.getElementById('serviceResult').innerHTML=res}
 async function serviceReset(){await sendCommand('ATSH7E0');const r=await udsRequest('7E0','31','0102');document.getElementById('serviceResult').innerHTML=r.includes('71')?'✅ Sent - Check dash':'❌ Blocked SDD needed'}
 async function readCJB(){await sendCommand('ATSH'+cjbAddress);let h='';let r=await udsRequest(cjbAddress,'22','F111');let p=parseUDS(r,'62');if(p)h+=`<div class="module"><b>Part</b><br>${p.match(/[0-9A-F]{2}/g).map(x=>String.fromCharCode(parseInt(x,16))).join('')}</div>`;document.getElementById('cjbData').innerHTML=h||'No data'}
@@ -341,6 +395,11 @@ Service: Full System Scan<br>
 Amount: R350.00<br>
 Notes: ${document.getElementById('codes').innerText.slice(0,50)}...<br>
 <button class="btn" onclick="window.print()">Print</button>`}
+
+const codeDB={'P0420':'Catalyst','P0171':'Lean','P0300':'Misfire','P2463':'DPF','U0100':'No Comm','B1342':'CJB','C0031':'ABS'};
+const modules=[['7E0','ECM'],['7E1','CJB'],['7E8','TCM'],['7E9','BCM2'],['7B3','ABS'],['7D0','Airbag'],['760','Cluster'],['720','Climate'],['727','PDC'],['73C','Steering'],['73D','Suspension'],['747','Radio'],['7C0','Gateway'],['7A0','Door FL'],['7A1','Door FR'],['73B','4x4'],['71C','TPMS'],['7A4','Seat FL'],['7A5','Seat FR'],['742','Audio']];
+async function scanAllModules(){log('Scanning 20 modules...');const d=document.getElementById('codes');d.innerHTML='';for(let[id,n]of modules){await sendCommand('ATSH'+id);const ok=(await sendCommand('220100',250)).includes('62');d.innerHTML+=`<div class="module">${ok?'✅':'❌'} ${id} ${n}</div>`}}
+async function readCodesAll(){let h='<h4>DTC by Module:</h4>';for(let[id,n]of[['7E0','ECM'],['7E1','CJB'],['7B3','ABS'],['7D0','Airbag']]){await sendCommand('ATSH'+id);const c=(await sendCommand('03')).match(/[0-9A-F]{4}/g);h+=`<div class="module"><b>${n}</b>: ${c?c.join(', '):'No codes'}</div>`}document.getElementById('codes').innerHTML=h}
 </script>
 </body>
 </html>
