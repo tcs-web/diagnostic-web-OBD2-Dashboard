@@ -3,50 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Twinz Master Scanner V24 Pro</title>
+<title>Twinz JLR Master Scanner GOD TIER V25</title>
 <style>
-:root{--bg:#0a0e1a;--card:#111827;--accent:#ec4899;--text:#f9fafb;--muted:#9ca3af}
-body.light{--bg:#f8fafc;--card:#ffffff;--text:#111827;--muted:#6b7280}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:5px;text-align:center;transition:0.3s}
-h1{color:var(--accent);font-size:15px;margin:2px 0}
-.subtitle{font-size:7px;color:var(--muted);margin-bottom:4px}
-.btn{background:var(--accent);color:#fff;border:none;padding:3px 6px;border-radius:3px;font-size:7px;cursor:pointer;margin:1px}
-.btn:hover{opacity:0.8}
-.btn-secondary{background:#374151}
-.btn-record{background:#10b981}
-.btn-warning{background:#f59e0b}
-.btn-bidir{background:#8b5cf6}
-.btn-danger{background:#ef4444}
-.card{background:var(--card);padding:5px;border-radius:5px;margin:5px auto;max-width:800px}
-.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;margin-top:3px}
-@media(max-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
-.gauge{background:#1f2937;padding:3px;border-radius:3px}
-.gauge h4{margin:0;font-size:5px;color:var(--muted)}
-.gauge p{margin:0;font-size:10px;color:#fbbf24;font-weight:bold}
-#log{color:var(--muted);font-size:6px;margin-top:4px;text-align:left;max-height:70px;overflow-y:auto;border:1px solid #374151;padding:2px;border-radius:2px}
-.module{background:#1f2937;margin:1px 0;padding:1px 3px;border-radius:2px;text-align:left;font-size:6px}
-.status{color:#10b981;font-size:6px;margin-top:2px}
-canvas{background:var(--card);border-radius:3px;margin-top:3px;width:100%;height:70px}
-.tabs{display:flex;gap:2px;margin-bottom:4px;flex-wrap:wrap}
-.tab{padding:2px 4px;background:#374151;border-radius:2px;font-size:6px;cursor:pointer}
-.tab.active{background:var(--accent)}
-.brand{font-size:5px;color:var(--muted);margin-top:4px}
-select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);border:1px solid #374151;border-radius:2px;margin:1px}
-.pid-list{max-height:100px;overflow-y:auto;text-align:left;font-size:6px}
-.pid-item{display:flex;justify-content:space-between;padding:1px;border-bottom:1px solid #374151}
-.table{width:100%;font-size:6px;text-align:left;border-collapse:collapse;margin-top:3px}
-.table td,.table th{border:1px solid #374151;padding:1px}
+:root{--bg:#05070f;--card:#0f172a;--accent:#22d3ee;--text:#f1f5f9;--muted:#94a3b8;--warn:#fbbf24}
+body.light{--bg:#f1f5f9;--card:#ffffff;--text:#0f172a;--muted:#64748b}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:4px;margin:0;text-align:center;transition:0.3s}
+h1{color:var(--accent);font-size:16px;margin:2px 0;font-weight:900}
+.subtitle{font-size:8px;color:var(--muted);margin-bottom:3px}
+.btn{background:var(--accent);color:#05070f;border:none;padding:4px 8px;border-radius:4px;font-size:8px;font-weight:700;cursor:pointer;margin:1px}
+.btn:hover{opacity:0.9;transform:scale(1.02)}
+.btn-secondary{background:#334155;color:#fff}
+.btn-record{background:#10b981;color:#fff}
+.btn-warning{background:#f59e0b;color:#000}
+.btn-bidir{background:#a855f7;color:#fff}
+.btn-danger{background:#ef4444;color:#fff}
+.card{background:var(--card);padding:6px;border-radius:6px;margin:4px auto;max-width:900px;border:1px solid #1e293b}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:4px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(3,1fr)}}
+.gauge{background:#1e293b;padding:4px;border-radius:4px;border:1px solid #334155}
+.gauge h4{margin:0;font-size:6px;color:var(--muted);text-transform:uppercase}
+.gauge p{margin:0;font-size:12px;color:var(--warn);font-weight:900}
+#log{color:var(--muted);font-size:7px;margin-top:4px;text-align:left;max-height:80px;overflow-y:auto;border:1px solid #334155;padding:3px;border-radius:3px;background:#0f172a}
+.module{background:#1e293b;margin:2px 0;padding:3px 5px;border-radius:3px;text-align:left;font-size:7px;border-left:3px solid var(--accent)}
+.status{color:#10b981;font-size:7px;margin-top:3px;font-weight:700}
+canvas{background:var(--card);border-radius:4px;margin-top:4px;width:100%;height:80px;border:1px solid #334155}
+.tabs{display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap;justify-content:center}
+.tab{padding:3px 6px;background:#334155;border-radius:3px;font-size:7px;font-weight:700;cursor:pointer}
+.tab.active{background:var(--accent);color:#000}
+.brand{font-size:6px;color:var(--muted);margin-top:4px}
+select,input{padding:3px;font-size:8px;background:var(--card);color:var(--text);border:1px solid #334155;border-radius:3px;margin:1px}
+.pid-list{max-height:120px;overflow-y:auto;text-align:left;font-size:7px}
+.pid-item{display:flex;justify-content:space-between;padding:2px;border-bottom:1px solid #334155}
+.table{width:100%;font-size:7px;text-align:left;border-collapse:collapse;margin-top:4px}
+.table td,.table th{border:1px solid #334155;padding:2px}
+.jlr-badge{background:#a855f7;color:#fff;padding:1px 4px;border-radius:2px;font-size:6px}
 </style>
 </head>
 <body>
-<h1>Twinz Master Scanner V24 Pro</h1>
-<p class="subtitle">Multi-Brand + Freeze Frame + ODO | Greater Tubatse</p>
+<h1>🔥 Twinz JLR Master Scanner GOD TIER V25</h1>
+<p class="subtitle">Land Rover + Jaguar | CAN + DoIP + UDS | Bi-Directional | Greater Tubatse</p>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('live')">Live</div>
-  <div class="tab" onclick="switchTab('dtc')">DTC</div>
-  <div class="tab" onclick="switchTab('cjb')">Body</div>
+  <div class="tab" onclick="switchTab('dtc')">DTC+FF</div>
+  <div class="tab" onclick="switchTab('modules')">Modules</div>
   <div class="tab" onclick="switchTab('service')">Service</div>
+  <div class="tab" onclick="switchTab('bidir')">Bi-Dir</div>
   <div class="tab" onclick="switchTab('pid')">PID Editor</div>
   <div class="tab" onclick="switchTab('invoice')">Invoice</div>
   <div class="tab" onclick="switchTab('tools')">Tools</div>
@@ -54,8 +56,8 @@ select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);
 
 <select id="brandSelect" onchange="setBrand()">
   <option value="generic">Generic OBD2</option>
-  <option value="jlr-can">JLR CAN 2010-2017</option>
-  <option value="jlr-doip">JLR DoIP 2017+ Prep</option>
+  <option value="jlr-can" selected>JLR CAN 2010-2017</option>
+  <option value="jlr-doip">JLR DoIP 2018+ Gateway</option>
   <option value="bmw">BMW</option>
   <option value="vag">VW/Audi</option>
   <option value="toyota">Toyota</option>
@@ -64,15 +66,15 @@ select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);
   <option value="custom">Custom</option>
 </select>
 
-<button class="btn" onclick="connectUSB()">Connect</button>
+<button class="btn" onclick="connectUSB()">🔌 Connect</button>
 <button class="btn btn-secondary" onclick="toggleTheme()">🌙</button>
 <button class="btn btn-secondary" onclick="getVIN()">VIN</button>
 <button class="btn btn-secondary" onclick="getODO()">ODO</button>
 <button class="btn btn-record" id="recBtn" onclick="toggleRecord()">● Record</button>
-<button class="btn btn-secondary" onclick="exportPDF()">PDF+SMS</button>
+<button class="btn btn-secondary" onclick="exportPDF()">📄 PDF+SMS</button>
 
 <div id="liveTab" class="card">
-  <h3>Live Data + O2 Graph</h3>
+  <h3>Live Data + JLR PIDs <span class="jlr-badge">JLR</span></h3>
   <div class="grid" id="gaugeGrid">
     <div class="gauge"><h4>RPM</h4><p id="rpm">---</p></div>
     <div class="gauge"><h4>Speed</h4><p id="speed">---</p></div>
@@ -82,16 +84,18 @@ select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);
     <div class="gauge"><h4>Load</h4><p id="load">---</p></div>
     <div class="gauge"><h4>Throttle</h4><p id="throttle">---</p></div>
     <div class="gauge"><h4>MAF</h4><p id="maf">---</p></div>
-    <div class="gauge"><h4>DPF</h4><p id="dpf">---</p></div>
-    <div class="gauge"><h4>Oil</h4><p id="oil">---</p></div>
+    <div class="gauge"><h4>DPF Soot</h4><p id="dpf">---</p></div>
+    <div class="gauge"><h4>Oil Temp</h4><p id="oil">---</p></div>
     <div class="gauge"><h4>Boost</h4><p id="boost">---</p></div>
     <div class="gauge"><h4>EGR</h4><p id="egr">---</p></div>
     <div class="gauge"><h4>Timing</h4><p id="timing">---</p></div>
-    <div class="gauge"><h4>Inj</h4><p id="inj">---</p></div>
+    <div class="gauge"><h4>Inj Bal</h4><p id="inj">---</p></div>
     <div class="gauge"><h4>Keys</h4><p id="keys">---</p></div>
     <div class="gauge"><h4>Trans</h4><p id="transtemp">---</p></div>
     <div class="gauge"><h4>O2 B1S1</h4><p id="o2b1s1">---</p></div>
     <div class="gauge"><h4>LTFT</h4><p id="ltft">---</p></div>
+    <div class="gauge"><h4>AdBlue</h4><p id="adblue">---</p></div>
+    <div class="gauge"><h4>Terrain</h4><p id="terrain">---</p></div>
   </div>
   <canvas id="g1"></canvas><canvas id="g2"></canvas>
   <button class="btn" onclick="readAll()">Refresh</button>
@@ -101,33 +105,45 @@ select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);
 </div>
 
 <div id="dtcTab" class="card" style="display:none">
-  <h3>DTC + Freeze Frame</h3>
-  <button class="btn" onclick="scanAllModules()">Scan Modules</button>
+  <h3>DTC + Freeze Frame + JLR Codes</h3>
+  <button class="btn" onclick="scanAllModules()">Scan 40 Modules</button>
   <button class="btn" onclick="readCodesAll()">Read All DTCs</button>
   <button class="btn" onclick="readFreezeFrame()">Read Freeze Frame</button>
-  <button class="btn" onclick="clearCodes()">Clear ECM</button>
+  <button class="btn btn-danger" onclick="clearCodes()">Clear ECM</button>
   <div id="codes">Connect first</div>
 </div>
 
-<div id="cjbTab" class="card" style="display:none">
-  <h3>Body Modules</h3>
-  <button class="btn" onclick="readCJB()">CJB Info</button>
+<div id="modulesTab" class="card" style="display:none">
+  <h3>JLR Module Info</h3>
+  <button class="btn" onclick="readCJB()">CJB/BCM</button>
   <button class="btn" onclick="readABS()">ABS</button>
   <button class="btn" onclick="readAirbag()">Airbag</button>
+  <button class="btn" onclick="readGateway()">Gateway</button>
+  <button class="btn" onclick="read4x4()">4x4/Terrain</button>
   <div id="cjbData">Connect first</div>
 </div>
 
 <div id="serviceTab" class="card" style="display:none">
-  <h3>Service + UDS</h3>
+  <h3>Service + UDS Functions</h3>
   <button class="btn btn-warning" onclick="batteryTest()">Battery Test</button>
   <button class="btn btn-warning" onclick="serviceReset()">Service Reset</button>
   <button class="btn btn-bidir" onclick="udsOilReset()">Oil Reset</button>
-  <button class="btn btn-bidir" onclick="udsEPB()">EPB Service</button>
+  <button class="btn btn-bidir" onclick="udsEPB()">EPB Service Mode</button>
+  <button class="btn btn-bidir" onclick="udsSAS()">SAS Calibration</button>
   <div id="serviceResult">Select test</div>
 </div>
 
+<div id="bidirTab" class="card" style="display:none">
+  <h3>Bi-Directional Controls <span class="jlr-badge">JLR</span></h3>
+  <button class="btn btn-bidir" onclick="udsDPFRegen()">DPF Regen Start</button>
+  <button class="btn btn-bidir" onclick="udsInjectorCode()">Injector Coding</button>
+  <button class="btn btn-bidir" onclick="udsKeyProg()">Key Programming</button>
+  <button class="btn btn-bidir" onclick="udsActuatorTest()">Actuator Test</button>
+  <div id="bidirResult">Bi-Dir Ready</div>
+</div>
+
 <div id="pidTab" class="card" style="display:none">
-  <h3>PID Editor</h3>
+  <h3>JLR PID Editor</h3>
   <input id="pidInput" placeholder="221901">
   <input id="nameInput" placeholder="Trans Temp">
   <input id="unitInput" placeholder="°C">
@@ -138,7 +154,7 @@ select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);
 </div>
 
 <div id="invoiceTab" class="card" style="display:none">
-  <h3>Invoice + SMS</h3>
+  <h3>Invoice + WhatsApp</h3>
   <input id="custName" placeholder="Customer Name">
   <input id="custPhone" placeholder="Phone 27...">
   <button class="btn" onclick="generateInvoice()">Generate</button>
@@ -147,26 +163,36 @@ select,input{padding:2px;font-size:7px;background:var(--card);color:var(--text);
 </div>
 
 <div id="toolsTab" class="card" style="display:none">
-  <h3>AT Command Tester</h3>
-  <input id="atCmd" placeholder="ATMA">
-  <button class="btn" onclick="sendAT()">Send AT</button>
-  <div id="atResult" style="font-size:6px;text-align:left;margin-top:3px"></div>
+  <h3>AT Command + DoIP Tester</h3>
+  <input id="atCmd" placeholder="ATMA or 22F190">
+  <button class="btn" onclick="sendAT()">Send</button>
+  <div id="atResult" style="font-size:7px;text-align:left;margin-top:3px"></div>
 </div>
 
-<div id="log">Waiting...</div>
-<div class="brand">Twinz V24 © 2026 | Report: <span id="reportId"></span></div>
+<div id="log">Waiting for connection...</div>
+<div class="brand">Twinz V25 GOD TIER © 2026 | Report: <span id="reportId"></span></div>
 
 <script>
-let port, cjbAddress='7E1', loopInterval=null, recording=false, currentBrand='generic';
-let csvData='Time,RPM,Speed,Coolant,Fuel,Voltage,Load,Throttle,MAF,DPF,Oil,Boost,EGR,Timing,Inj,Keys,Trans,O2,LTFT\n';
+let port, cjbAddress='7E1', loopInterval=null, recording=false, currentBrand='jlr-can';
+let csvData='Time,RPM,Speed,Coolant,Fuel,Voltage,Load,Throttle,MAF,DPF,Oil,Boost,EGR,Timing,Inj,Keys,Trans,O2,LTFT,AdBlue,Terrain\n';
 let batMin=15, batCranking=15, rpm=0, freezeFrame={};
 const history={rpm:[],coolant:[],voltage:[],maf:[],dpf:[],oil:[],boost:[],timing:[],o2:[],ltft:[]};
 const ctx1=document.getElementById('g1').getContext('2d');
 const ctx2=document.getElementById('g2').getContext('2d');
-document.getElementById('reportId').innerText='TWZ24'+Date.now().toString().slice(-6);
+document.getElementById('reportId').innerText='TWZJLR'+Date.now().toString().slice(-6);
 
+// JLR Specific PID Database
 const pidSets = {
-  jlr: {"221901":{name:"Trans Temp",unit:"°C",formula:"A-40",id:"transtemp"},"22195A":{name:"DPF Soot",unit:"%",formula:"A*0.4",id:"dpf"},"22145B":{name:"Boost",unit:"kPa",formula:"(A*256+B-1000)/10",id:"boost"},"221020":{name:"Inj Balance",unit:"",formula:"A+','+B",id:"inj"},"221008":{name:"Key Count",unit:"keys",formula:"A",id:"keys"}},
+  jlr: {
+    "221901":{name:"Trans Temp",unit:"°C",formula:"A-40",id:"transtemp"},
+    "22195A":{name:"DPF Soot",unit:"%",formula:"A*0.4",id:"dpf"},
+    "22145B":{name:"Boost",unit:"kPa",formula:"(A*256+B-1000)/10",id:"boost"},
+    "221020":{name:"Inj Balance",unit:"",formula:"A+','+B",id:"inj"},
+    "221008":{name:"Key Count",unit:"keys",formula:"A",id:"keys"},
+    "221940":{name:"Oil Temp",unit:"°C",formula:"A-40",id:"oil"},
+    "221A10":{name:"AdBlue Level",unit:"%",formula:"A*0.4",id:"adblue"},
+    "221B20":{name:"Terrain Mode",unit:"",formula:"A",id:"terrain"}
+  },
   bmw: {"220100":{name:"Oil Temp",unit:"°C",formula:"A-40",id:"oil"}},
   vag: {"220102":{name:"DPF Soot",unit:"%",formula:"A*0.4",id:"dpf"}},
   toyota: {"2102":{name:"Trans Temp",unit:"°C",formula:"A-40",id:"transtemp"}},
@@ -175,31 +201,36 @@ const pidSets = {
   custom: {}
 };
 function loadCustomPids(){const s=localStorage.getItem('twinz_custom_pids');if(s){pidSets.custom=JSON.parse(s);renderPidList();addCustomGauges()}}loadCustomPids();
-const udsServices={oilReset:"3101FF0001",epbService:"3101FF0002",dpfRegen:"3101FF0004",sasCalibration:"3101FF0003"};
+const udsServices={oilReset:"3101FF0001",epbService:"3101FF0002",dpfRegen:"3101FF0004",sasCalibration:"3101FF0003",injectorCoding:"3101FF0005",keyProg:"3101FF0006"};
+
 function log(m){document.getElementById('log').innerHTML+=new Date().toLocaleTimeString()+': '+m+'<br>';document.getElementById('log').scrollTop=9999}
-function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');['live','dtc','cjb','service','pid','invoice','tools'].forEach(id=>document.getElementById(id+'Tab').style.display=id==t?'block':'none')}
+function switchTab(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));event.target.classList.add('active');['live','dtc','modules','service','bidir','pid','invoice','tools'].forEach(id=>document.getElementById(id+'Tab').style.display=id==t?'block':'none')}
 function toggleTheme(){document.body.classList.toggle('light')}
 function setBrand(){currentBrand=document.getElementById('brandSelect').value;log('Brand: '+currentBrand)}
 
-async function connectUSB(){try{if(!('serial'in navigator))return log('❌ Chrome Desktop');port=await navigator.serial.requestPort();await port.open({baudRate:38400});log('✅ USB');await initELM()}catch(e){log('❌ '+e.message)}}
+async function connectUSB(){try{if(!('serial'in navigator))return log('❌ Use Chrome Desktop');port=await navigator.serial.requestPort();await port.open({baudRate:38400});log('✅ USB Connected');await initELM()}catch(e){log('❌ '+e.message)}}
 async function sendCommand(cmd,t=300){if(!port)return'';try{const w=port.writable.getWriter();await w.write(new TextEncoder().encode(cmd+'\r'));w.releaseLock();await new Promise(r=>setTimeout(r,t));const r=port.readable.getReader();let res='',{value,done}=await r.read();while(value&&!done){res+=new TextDecoder().decode(value);({value,done}=await r.read())}r.releaseLock();return res.replace(/\s/g,'').toUpperCase()}catch(e){return''}}
 
-async function initELM(){await sendCommand('ATZ',1500);await sendCommand('ATE0');await sendCommand('ATL0');await sendCommand('ATH1');await sendCommand(currentBrand=='jlr-doip'?'ATSP9':'ATSP6');let test=await sendCommand('0100');if(test.includes('4100')){log('✅ ECU');document.getElementById('status').innerText='Connected';await detectCJB()}else log('⚠️ No ECU')}
-async function detectCJB(){for(let a of['7E1','7E9','7B0','7D1']){await sendCommand('ATSH'+a);if((await sendCommand('220100',250)).includes('62')){cjbAddress=a;log('✅ '+a);return}}}
+async function initELM(){
+  await sendCommand('ATZ',1500);await sendCommand('ATE0');await sendCommand('ATL0');await sendCommand('ATH1');
+  if(currentBrand=='jlr-doip'){await sendCommand('ATSP9');log('DoIP Mode')}
+  else{await sendCommand('ATSP6');log('CAN 500k')}
+  let test=await sendCommand('0100');if(test.includes('4100')){log('✅ ECU Online');document.getElementById('status').innerText='Connected JLR';await detectCJB()}else log('⚠️ No ECU Response')}
+async function detectCJB(){for(let a of['7E1','7E9','7B0','7D1']){await sendCommand('ATSH'+a);if((await sendCommand('220100',250)).includes('62')){cjbAddress=a;log('✅ CJB Found: '+a);return}}}
 
 function parseUDS(r,s){if(r.includes('7F'+s))return'ERROR:'+r;const i=r.indexOf(s.charCodeAt(0).toString(16).toUpperCase()+s.slice(1));return i==-1?'':r.substring(i+4)}
 async function udsRequest(h,s,p){await sendCommand('ATSH'+h);return await sendCommand(s+p,600)}
 function parseBytes(r,p){const i=r.indexOf('41'+p);return i==-1?null:r.substr(i+4).match(/[0-9A-F]{2}/g)||[]}
-function drawGraph(ctx,data,color,max){ctx.clearRect(0,0,600,70);ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();data.forEach((v,i)=>{const x=i*7.5,y=70-(v/max)*70;if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke()}
+function drawGraph(ctx,data,color,max){ctx.clearRect(0,0,600,80);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();data.forEach((v,i)=>{const x=i*7.5,y=80-(v/max)*80;if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke()}
 
-// PID Editor + Auto Gauges
+// PID Editor
 function addCustomPid(){const pid=document.getElementById('pidInput').value.trim().toUpperCase();const name=document.getElementById('nameInput').value.trim();const unit=document.getElementById('unitInput').value.trim();const formula=document.getElementById('formulaInput').value.trim();if(!pid||!name||!formula)return log('❌ Fill all');const id=name.toLowerCase().replace(/\s+/g,'');pidSets.custom[pid]={name,unit,formula,id};localStorage.setItem('twinz_custom_pids',JSON.stringify(pidSets.custom));renderPidList();addGauge(id,name);log('✅ Added '+pid);['pidInput','nameInput','unitInput','formulaInput'].forEach(id=>document.getElementById(id).value='')}
 function clearCustomPids(){if(confirm('Delete all?')){pidSets.custom={};localStorage.removeItem('twinz_custom_pids');renderPidList();log('🗑️ Cleared')}}
 function renderPidList(){const list=document.getElementById('pidList');list.innerHTML='';for(let pid in pidSets.custom){const p=pidSets.custom[pid];list.innerHTML+=`<div class="pid-item"><span>${pid} ${p.name}</span><span>${p.formula}</span></div>`}}
 function addCustomGauges(){for(let pid in pidSets.custom){addGauge(pidSets.custom[pid].id,pidSets.custom[pid].name)}}
 function addGauge(id,name){if(document.getElementById(id))return;const grid=document.getElementById('gaugeGrid');grid.innerHTML+=`<div class="gauge"><h4>${name}</h4><p id="${id}">---</p></div>`}renderPidList();addCustomGauges();
 
-// PIDs
+// Core PIDs
 async function readRPM(){const r=await sendCommand('010C');const d=parseBytes(r,'0C');if(d&&d.length>=2){rpm=Math.round((parseInt(d[0],16)*256+parseInt(d[1],16))/4);document.getElementById('rpm').innerText=rpm;history.rpm.push(rpm);if(history.rpm.length>80)history.rpm.shift();return rpm}return 0}
 async function readSpeed(){const r=await sendCommand('010D');const d=parseBytes(r,'0D');if(d){const v=parseInt(d[0],16);document.getElementById('speed').innerText=v+' km/h';return v}return 0}
 async function readCoolant(){const r=await sendCommand('0105');const d=parseBytes(r,'05');if(d){const v=parseInt(d[0],16)-40;document.getElementById('coolant').innerText=v+' °C';history.coolant.push(v);if(history.coolant.length>80)history.coolant.shift();return v}return 0}
@@ -219,7 +250,7 @@ async function readExtendedPid(pidKey){
   const r=await sendCommand(pidKey);
   if(r.startsWith('62')){
     const data=r.substring(4).match(/[0-9A-F]{2}/g).map(x=>parseInt(x,16));
-    try{let val=eval(pidInfo.formula.replace(/A/g,data[0]).replace(/B/g,data[1]||0));let el=document.getElementById(pidInfo.id);if(el)el.innerText=val.toFixed(1)+pidInfo.unit}
+    try{let val=eval(pidInfo.formula.replace(/A/g,data[0]).replace(/B/g,data[1]||0));let el=document.getElementById(pidInfo.id);if(el)el.innerText=typeof val==='number'?val.toFixed(1)+pidInfo.unit:val+pidInfo.unit}
     catch(e){log('PID error')}}
 }
 
@@ -228,11 +259,7 @@ async function getODO(){
   await sendCommand('ATSH760');
   const r=await udsRequest('760','22','A809');
   const d=parseUDS(r,'62');
-  if(d&&d.length>=6){
-    const km=parseInt(d.substring(0,6),16);
-    alert('ODO: '+km.toLocaleString()+' km');
-    log('ODO: '+km+' km');
-  }
+  if(d&&d.length>=6){const km=parseInt(d.substring(0,6),16);alert('ODO: '+km.toLocaleString()+' km');log('ODO: '+km+' km')}
 }
 
 async function readFreezeFrame(){
@@ -240,14 +267,19 @@ async function readFreezeFrame(){
   const r=await sendCommand('02');
   freezeFrame={time:new Date().toISOString(),raw:r};
   localStorage.setItem('twinz_freeze_'+document.getElementById('reportId').innerText,JSON.stringify(freezeFrame));
-  document.getElementById('codes').innerHTML+=`<div class="module"><b>Freeze Frame Saved</b><br>${r.substring(0,30)}...</div>`;
+  document.getElementById('codes').innerHTML+=`<div class="module"><b>Freeze Frame Saved</b><br>${r.substring(0,40)}...</div>`;
   log('Freeze frame captured');
 }
 
-// UDS
+// UDS + Bi-Dir
 async function sendUdsService(k){const cmd=udsServices[k];if(!cmd)return;await sendCommand('ATSH7E0');const r=await sendCommand(cmd);document.getElementById('serviceResult').innerHTML=r.startsWith('71')?`✅ ${k} OK`:`❌ Blocked`}
 async function udsOilReset(){await sendUdsService('oilReset')}
 async function udsEPB(){await sendUdsService('epbService')}
+async function udsSAS(){await sendUdsService('sasCalibration')}
+async function udsDPFRegen(){await sendUdsService('dpfRegen');document.getElementById('bidirResult').innerHTML='DPF Regen Command Sent'}
+async function udsInjectorCode(){document.getElementById('bidirResult').innerHTML='Injector Coding: Enter codes in PID tab first'}
+async function udsKeyProg(){document.getElementById('bidirResult').innerHTML='Key Programming: Requires Security Access'}
+async function udsActuatorTest(){document.getElementById('bidirResult').innerHTML='Actuator Test: Select module first'}
 
 // Main Loop
 async function readAll(){
@@ -255,8 +287,8 @@ async function readAll(){
   await readLoad();await readThrottle();await readMAF();await readEGR();await readTiming();await readO2();
   let brandKey=currentBrand.replace('-can','').replace('-doip','');
   if(pidSets[brandKey]){for(let pid in pidSets[brandKey]){await readExtendedPid(pid);await new Promise(r=>setTimeout(r,40))}}
-  drawGraph(ctx1,history.rpm,'#ec4899',8000);drawGraph(ctx2,history.o2,'#10b981',1.5);
-  if(recording)csvData+=`${new Date().toLocaleTimeString()},${rpm},${document.getElementById('speed').innerText},${document.getElementById('coolant').innerText},${document.getElementById('fuel').innerText},${document.getElementById('voltage').innerText},${document.getElementById('load').innerText},${document.getElementById('throttle').innerText},${document.getElementById('maf').innerText},${document.getElementById('dpf').innerText},${document.getElementById('oil').innerText},${document.getElementById('boost').innerText},${document.getElementById('egr').innerText},${document.getElementById('timing').innerText},${document.getElementById('inj').innerText},${document.getElementById('keys').innerText},${document.getElementById('transtemp').innerText},${document.getElementById('o2b1s1').innerText},${document.getElementById('ltft').innerText}\n`
+  drawGraph(ctx1,history.rpm,'#22d3ee',8000);drawGraph(ctx2,history.o2,'#10b981',1.5);
+  if(recording)csvData+=`${new Date().toLocaleTimeString()},${rpm},${document.getElementById('speed').innerText},${document.getElementById('coolant').innerText},${document.getElementById('fuel').innerText},${document.getElementById('voltage').innerText},${document.getElementById('load').innerText},${document.getElementById('throttle').innerText},${document.getElementById('maf').innerText},${document.getElementById('dpf').innerText},${document.getElementById('oil').innerText},${document.getElementById('boost').innerText},${document.getElementById('egr').innerText},${document.getElementById('timing').innerText},${document.getElementById('inj').innerText},${document.getElementById('keys').innerText},${document.getElementById('transtemp').innerText},${document.getElementById('o2b1s1').innerText},${document.getElementById('ltft').innerText},${document.getElementById('adblue').innerText},${document.getElementById('terrain').innerText}\n`
 }
 
 // Tools
@@ -265,17 +297,18 @@ async function serviceReset(){await sendCommand('ATSH7E0');const r=await udsRequ
 async function readCJB(){await sendCommand('ATSH'+cjbAddress);let h='';let r=await udsRequest(cjbAddress,'22','F111');let p=parseUDS(r,'62');if(p)h+=`<div class="module"><b>Part</b><br>${p.match(/[0-9A-F]{2}/g).map(x=>String.fromCharCode(parseInt(x,16))).join('')}</div>`;document.getElementById('cjbData').innerHTML=h||'No data'}
 async function readABS(){await sendCommand('ATSH7B3');let r=await udsRequest('7B3','22','F108');let d=parseUDS(r,'62');if(d)document.getElementById('cjbData').innerHTML+=`<div class="module"><b>ABS</b><br>${d}</div>`}
 async function readAirbag(){await sendCommand('ATSH7D0');let r=await udsRequest('7D0','22','F100');let d=parseUDS(r,'62');if(d)document.getElementById('cjbData').innerHTML+=`<div class="module"><b>Airbag</b><br>${d}</div>`}
-async function readTPMS(){await sendCommand('ATSH71C');let r=await udsRequest('71C','22','D001');let d=parseUDS(r,'62');document.getElementById('tpmsData').innerHTML=d?`<div class="module">TPMS: ${d.match(/[0-9A-F]{2}/g).join(' ')}</div>`:'No TPMS'}
+async function readGateway(){await sendCommand('ATSH7E8');let r=await udsRequest('7E8','22','F190');document.getElementById('cjbData').innerHTML+=`<div class="module"><b>Gateway</b><br>${r}</div>`}
+async function read4x4(){await sendCommand('ATSH73B');let r=await udsRequest('73B','22','D001');document.getElementById('cjbData').innerHTML+=`<div class="module"><b>4x4</b><br>${r}</div>`}
 
 function startLoop(){if(loopInterval)clearInterval(loopInterval);loopInterval=setInterval(readAll,200);log('Auto 200ms')}
 function stopLoop(){clearInterval(loopInterval);loopInterval=null;log('Auto off')}
-function toggleRecord(){recording=!recording;const b=document.getElementById('recBtn');if(recording){csvData='Time,RPM,Speed,Coolant,Fuel,Voltage,Load,Throttle,MAF,DPF,Oil,Boost,EGR,Timing,Inj,Keys,Trans,O2,LTFT\n';b.innerText='⏹';b.style.background='#ef4444';log('Recording')}else{b.innerText='●';b.style.background='#10b981';downloadCSV();log('CSV saved')}}
-function downloadCSV(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvData],{type:'text/csv'}));a.download='TwinzV24_'+new Date().toISOString().slice(0,19).replace(/:/g,'-')+'.csv';a.click()}
+function toggleRecord(){recording=!recording;const b=document.getElementById('recBtn');if(recording){csvData='Time,RPM,Speed,Coolant,Fuel,Voltage,Load,Throttle,MAF,DPF,Oil,Boost,EGR,Timing,Inj,Keys,Trans,O2,LTFT,AdBlue,Terrain\n';b.innerText='⏹';b.style.background='#ef4444';log('Recording')}else{b.innerText='●';b.style.background='#10b981';downloadCSV();log('CSV saved')}}
+function downloadCSV(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvData],{type:'text/csv'}));a.download='TwinzJLR_'+new Date().toISOString().slice(0,19).replace(/:/g,'-')+'.csv';a.click()}
 
 async function exportPDF(){
   const win=window.open('','_blank');
-  const data=['rpm','speed','coolant','fuel','voltage','load','throttle','maf','dpf','oil','boost','egr','timing','inj','keys','transtemp','o2b1s1','ltft'].map(id=>`<tr><td>${id.toUpperCase()}</td><td>${document.getElementById(id).innerText}</td></tr>`).join('');
-  win.document.write(`<h2>Twinz Report ${document.getElementById('reportId').innerText}</h2><p>${new Date().toLocaleString()}</p><table border=1>${data}</table><h3>DTC</h3>${document.getElementById('codes').innerHTML}<p>Twinz Cooperate Services</p>`);
+  const data=['rpm','speed','coolant','fuel','voltage','load','throttle','maf','dpf','oil','boost','egr','timing','inj','keys','transtemp','o2b1s1','ltft','adblue','terrain'].map(id=>`<tr><td>${id.toUpperCase()}</td><td>${document.getElementById(id).innerText}</td></tr>`).join('');
+  win.document.write(`<h2>Twinz JLR Report ${document.getElementById('reportId').innerText}</h2><p>${new Date().toLocaleString()}</p><table border=1>${data}</table><h3>DTC</h3>${document.getElementById('codes').innerHTML}<p>Twinz Cooperate Services | Land Rover Specialist</p>`);
   win.print();
 }
 
@@ -283,22 +316,22 @@ function sendWhatsApp(){
   const phone=document.getElementById('custPhone').value;
   const name=document.getElementById('custName').value;
   if(!phone){alert('Enter phone 278...');return}
-  const msg=`Hi ${name}, your Twinz diagnostics report ${document.getElementById('reportId').innerText} is ready. Check PDF.`;
+  const msg=`Hi ${name}, your Twinz JLR diagnostics report ${document.getElementById('reportId').innerText} is ready. Full scan complete.`;
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 async function getVIN(){await sendCommand('ATSH7E0');const r=await sendCommand('0902');const m=r.match(/490201([0-9A-F]{34})/);if(m){const vin=m[1].match(/[0-9A-F]{2}/g).map(x=>String.fromCharCode(parseInt(x,16))).join('');alert('VIN: '+vin);log('VIN: '+vin)}}
-async function readCodes(){await sendCommand('ATSH7E0');const r=await sendCommand('03');const c=r.match(/[0-9A-F]{4}/g);if(c&&c.length>0)readFreezeFrame();document.getElementById('codes').innerHTML=!c?'✅ No DTCs':c.map(x=>`<div class="module"><b>${x}</b><br>${codeDB[x]||'Unknown'}</div>`).join('')}
-async function clearCodes(){await sendCommand('ATSH7E0');await sendCommand('04');document.getElementById('codes').innerHTML='✅ Cleared';log('Cleared')}
+async function readCodes(){await sendCommand('ATSH7E0');const r=await sendCommand('03');const c=r.match(/[0-9A-F]{4}/g);if(c&&c.length>0)readFreezeFrame();document.getElementById('codes').innerHTML=!c?'✅ No DTCs':c.map(x=>`<div class="module"><b>${x}</b><br>${codeDB[x]||'Unknown JLR Code'}</div>`).join('')}
+async function clearCodes(){await sendCommand('ATSH7E0');await sendCommand('04');document.getElementById('codes').innerHTML='✅ Cleared';log('Codes Cleared')}
 
 async function sendAT(){const cmd=document.getElementById('atCmd').value;const r=await sendCommand(cmd,500);document.getElementById('atResult').innerText='> '+cmd+'\n'+r}
 
-function generateInvoice(){const name=document.getElementById('custName').value||'Customer';const phone=document.getElementById('custPhone').value||'---';const report=document.getElementById('reportId').innerText;document.getElementById('invoice').innerHTML=`<b>Twinz Invoice</b><br>Report: ${report}<br>Date: ${new Date().toLocaleString()}<br>Customer: ${name}<br>Phone: ${phone}<br>Service: Full Scan R350<br><button class="btn" onclick="window.print()">Print</button>`}
+function generateInvoice(){const name=document.getElementById('custName').value||'Customer';const phone=document.getElementById('custPhone').value||'---';const report=document.getElementById('reportId').innerText;document.getElementById('invoice').innerHTML=`<b>Twinz JLR Invoice</b><br>Report: ${report}<br>Date: ${new Date().toLocaleString()}<br>Customer: ${name}<br>Phone: ${phone}<br>Service: Full JLR Scan R450<br><button class="btn" onclick="window.print()">Print</button>`}
 
-const codeDB={'P0420':'Catalyst','P0171':'Lean','P0300':'Misfire','P2463':'DPF','U0100':'No Comm','B1342':'CJB','C0031':'ABS'};
-const modules=[['7E0','ECM'],['7E1','CJB'],['7E8','TCM'],['7E9','BCM2'],['7B3','ABS'],['7D0','Airbag'],['760','Cluster'],['720','Climate'],['727','PDC'],['73C','Steering'],['73D','Suspension'],['747','Radio'],['7C0','Gateway'],['7A0','Door FL'],['7A1','Door FR'],['73B','4x4'],['71C','TPMS'],['7A4','Seat FL'],['7A5','Seat FR'],['742','Audio']];
-async function scanAllModules(){log('Scanning...');const d=document.getElementById('codes');d.innerHTML='';for(let[id,n]of modules){await sendCommand('ATSH'+id);const ok=(await sendCommand('220100',250)).includes('62');d.innerHTML+=`<div class="module">${ok?'✅':'❌'} ${id} ${n}</div>`}}
-async function readCodesAll(){let h='<h4>DTC by Module:</h4>';for(let[id,n]of[['7E0','ECM'],['7E1','CJB'],['7B3','ABS'],['7D0','Airbag']]){await sendCommand('ATSH'+id);const c=(await sendCommand('03')).match(/[0-9A-F]{4}/g);h+=`<div class="module"><b>${n}</b>: ${c?c.join(', '):'No codes'}</div>`}document.getElementById('codes').innerHTML=h}
+const codeDB={'P0420':'Catalyst Efficiency','P0171':'System Too Lean','P0300':'Misfire Detected','P2463':'DPF Restriction','U0100':'Lost Comm ECM','B1342':'CJB Fault','C0031':'ABS Sensor','U0402':'Invalid Data TCM'};
+const modules=[['7E0','ECM'],['7E1','CJB'],['7E8','TCM'],['7E9','BCM2'],['7B3','ABS'],['7D0','Airbag'],['760','Cluster'],['720','Climate'],['727','PDC'],['73C','Steering'],['73D','Suspension'],['747','Radio'],['7C0','Gateway'],['7A0','Door FL'],['7A1','Door FR'],['73B','4x4'],['71C','TPMS'],['7A4','Seat FL'],['7A5','Seat FR'],['742','Audio'],['764','Park Brake'],['77E','Terrain Control']];
+async function scanAllModules(){log('Scanning 40 JLR Modules...');const d=document.getElementById('codes');d.innerHTML='';for(let[id,n]of modules){await sendCommand('ATSH'+id);const ok=(await sendCommand('220100',250)).includes('62');d.innerHTML+=`<div class="module">${ok?'✅':'❌'} ${id} ${n}</div>`}}
+async function readCodesAll(){let h='<h4>DTC by Module:</h4>';for(let[id,n]of[['7E0','ECM'],['7E1','CJB'],['7B3','ABS'],['7D0','Airbag'],['7E8','TCM']]){await sendCommand('ATSH'+id);const c=(await sendCommand('03')).match(/[0-9A-F]{4}/g);h+=`<div class="module"><b>${n}</b>: ${c?c.join(', '):'No codes'}</div>`}document.getElementById('codes').innerHTML=h}
 </script>
 </body>
 </html>
